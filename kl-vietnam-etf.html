@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K&L Vietnam ETF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0A1120;
+    --navy-900:#0E1626;
+    --navy-800:#162238;
+    --navy-700:#1E2E48;
+    --gold-500:#C9A227;
+    --gold-300:#E4C860;
+    --jade-500:#3F6B5E;
+    --jade-300:#6E9C8C;
+    --ivory-100:#EDE8DC;
+    --ivory-400:#9C9686;
+    --line:rgba(237,232,220,0.1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--navy-950);
+    color:var(--ivory-100);
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:300;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:500;letter-spacing:-0.01em;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--gold-500);
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{content:'';width:24px;height:1px;background:var(--gold-500);}
+  a{color:inherit;text-decoration:none;}
+  section{position:relative;padding:120px 8vw;}
+  @media(max-width:720px){section{padding:80px 6vw;}}
+
+  /* NAV BAR */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:22px 8vw;
+    background:rgba(10,17,32,0.75);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-mark{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;letter-spacing:0.02em;}
+  .nav-mark span{color:var(--gold-500);}
+  .nav-links{display:flex;gap:36px;font-size:0.85rem;color:var(--ivory-400);}
+  .nav-links a:hover{color:var(--gold-300);}
+  @media(max-width:720px){.nav-links{display:none;}}
+
+  /* HERO */
+  .hero{
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding-top:140px;
+    position:relative;
+  }
+  .hero-chart{
+    position:absolute;
+    top:0;left:0;width:100%;height:100%;
+    opacity:0.9;
+    pointer-events:none;
+  }
+  .hero-chart path{
+    fill:none;
+    stroke:var(--gold-500);
+    stroke-width:1.6;
+    stroke-linecap:round;
+    stroke-dasharray:2000;
+    stroke-dashoffset:2000;
+    animation:draw 3.2s cubic-bezier(0.65,0,0.35,1) forwards 0.3s;
+  }
+  .hero-chart path.jade{stroke:var(--jade-500);stroke-width:1;opacity:0.55;
+    animation:draw 3.6s cubic-bezier(0.65,0,0.35,1) forwards 0.6s;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  .hero-content{position:relative;z-index:2;max-width:900px;}
+  .hero h1{
+    font-size:clamp(3rem,7vw,5.6rem);
+    line-height:0.98;
+    color:var(--ivory-100);
+  }
+  .hero h1 em{font-style:italic;color:var(--gold-300);}
+  .hero p.lede{
+    margin-top:28px;
+    font-size:1.15rem;
+    color:var(--ivory-400);
+    max-width:560px;
+  }
+  .hero-stats{
+    display:flex;gap:56px;margin-top:64px;flex-wrap:wrap;
+    border-top:1px solid var(--line);padding-top:28px;
+  }
+  .hero-stat .v{font-family:'IBM Plex Mono',monospace;font-size:1.7rem;color:var(--gold-300);}
+  .hero-stat .l{font-size:0.75rem;color:var(--ivory-400);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;}
+
+  /* GIOI THIEU */
+  .intro-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:80px;align-items:start;}
+  @media(max-width:860px){.intro-grid{grid-template-columns:1fr;gap:48px;}}
+  .intro-grid h2{font-size:clamp(2rem,3.5vw,2.8rem);margin-bottom:24px;}
+  .intro-grid p{color:var(--ivory-400);margin-bottom:18px;max-width:540px;}
+  .intro-grid p strong{color:var(--ivory-100);font-weight:500;}
+  .lacquer{
+    aspect-ratio:1/1.05;
+    border:1px solid var(--line);
+    border-radius:2px;
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(160deg,var(--navy-800),var(--navy-950));
+  }
+  .lacquer svg{width:100%;height:100%;}
+
+  /* MUC TIEU */
+  .goals{background:var(--navy-900);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .goals h2{font-size:clamp(2rem,3.5vw,2.8rem);max-width:640px;margin-bottom:64px;}
+  .goal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);}
+  @media(max-width:960px){.goal-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.goal-grid{grid-template-columns:1fr;}}
+  .goal-card{background:var(--navy-900);padding:36px 28px;min-height:230px;display:flex;flex-direction:column;}
+  .goal-num{font-family:'IBM Plex Mono',monospace;color:var(--jade-300);font-size:0.85rem;margin-bottom:20px;}
+  .goal-card h3{font-size:1.2rem;font-weight:500;margin-bottom:12px;}
+  .goal-card p{font-size:0.9rem;color:var(--ivory-400);}
+
+  /* DOI TUONG */
+  .audience h2{font-size:clamp(2rem,3.5vw,2.8rem);margin-bottom:12px;}
+  .audience > p{color:var(--ivory-400);max-width:560px;margin-bottom:56px;}
+  .audience-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+  @media(max-width:860px){.audience-grid{grid-template-columns:1fr;}}
+  .audience-card{
+    border:1px solid var(--line);padding:32px 28px;border-radius:2px;
+    transition:border-color 0.25s ease,transform 0.25s ease;
+  }
+  .audience-card:hover{border-color:var(--gold-500);transform:translateY(-4px);}
+  .audience-card h3{font-size:1.15rem;font-weight:500;margin-bottom:14px;color:var(--gold-300);}
+  .audience-card p{font-size:0.9rem;color:var(--ivory-400);}
+
+  /* THANH TUU */
+  .achieve{background:var(--navy-900);border-top:1px solid var(--line);}
+  .achieve h2{font-size:clamp(2rem,3.5vw,2.8rem);margin-bottom:12px;}
+  .achieve > .sub{color:var(--ivory-400);max-width:560px;margin-bottom:64px;}
+  .metric-row{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    margin-bottom:80px;
+  }
+  @media(max-width:860px){.metric-row{grid-template-columns:repeat(2,1fr);}}
+  .metric{padding:32px 24px;border-right:1px solid var(--line);}
+  .metric:last-child{border-right:none;}
+  .metric .v{font-family:'IBM Plex Mono',monospace;font-size:2.1rem;color:var(--gold-300);}
+  .metric .l{font-size:0.78rem;color:var(--ivory-400);margin-top:8px;text-transform:uppercase;letter-spacing:0.08em;}
+
+  .timeline{position:relative;padding-left:36px;}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:1px;background:var(--line);}
+  .t-item{position:relative;padding-bottom:44px;}
+  .t-item:last-child{padding-bottom:0;}
+  .t-item::before{
+    content:'';position:absolute;left:-36px;top:4px;
+    width:9px;height:9px;border-radius:50%;
+    background:var(--navy-900);border:1.5px solid var(--gold-500);
+  }
+  .t-item .yr{font-family:'IBM Plex Mono',monospace;color:var(--gold-300);font-size:0.85rem;margin-bottom:6px;}
+  .t-item h3{font-size:1.1rem;font-weight:500;margin-bottom:8px;}
+  .t-item p{color:var(--ivory-400);font-size:0.92rem;max-width:560px;}
+
+  /* CTA / FOOTER */
+  .cta{
+    text-align:left;padding-top:140px;padding-bottom:140px;
+    border-top:1px solid var(--line);
+  }
+  .cta h2{font-size:clamp(2.2rem,5vw,3.6rem);max-width:760px;margin-bottom:32px;}
+  .cta h2 em{font-style:italic;color:var(--gold-300);}
+  .cta-buttons{display:flex;gap:16px;flex-wrap:wrap;}
+  .btn{
+    font-family:'IBM Plex Mono',monospace;font-size:0.85rem;
+    padding:14px 28px;border-radius:2px;border:1px solid var(--gold-500);
+    display:inline-block;transition:background 0.25s ease,color 0.25s ease;
+  }
+  .btn.primary{background:var(--gold-500);color:var(--navy-950);}
+  .btn.primary:hover{background:var(--gold-300);}
+  .btn.ghost{color:var(--ivory-100);border-color:var(--line);}
+  .btn.ghost:hover{border-color:var(--ivory-100);}
+  footer{
+    padding:36px 8vw;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:0.78rem;color:var(--ivory-400);flex-wrap:wrap;gap:10px;
+  }
+  .disclaimer{
+    font-size:0.72rem;color:var(--ivory-400);opacity:0.65;max-width:760px;
+    margin-top:28px;line-height:1.7;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-mark">K&L <span>Vietnam ETF</span></div>
+  <div class="nav-links">
+    <a href="#gioi-thieu">Giới thiệu</a>
+    <a href="#muc-tieu">Mục tiêu</a>
+    <a href="#doi-tuong">Đối tượng</a>
+    <a href="#thanh-tuu">Thành tựu</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <svg class="hero-chart" viewBox="0 0 1200 700" preserveAspectRatio="none">
+    <path class="jade" d="M -50 520 C 150 500, 250 560, 380 480 C 500 410, 600 470, 720 400 C 850 330, 950 380, 1100 260 C 1180 210, 1220 220, 1260 190"/>
+    <path d="M -50 600 C 120 610, 220 540, 340 560 C 460 580, 540 470, 660 420 C 780 370, 860 440, 980 340 C 1080 260, 1150 280, 1260 150"/>
+  </svg>
+  <div class="hero-content">
+    <div class="eyebrow">Quỹ hoán đổi danh mục · Thị trường Việt Nam</div>
+    <h1>Vốn kỷ luật.<br>Tăng trưởng <em>Việt Nam.</em></h1>
+    <p class="lede">K&L Vietnam ETF là quỹ đầu tư chỉ số được xây dựng trên nền tảng phân tích định lượng và kỷ luật quản trị rủi ro, theo đuổi tăng trưởng dài hạn cùng các doanh nghiệp dẫn đầu thị trường chứng khoán Việt Nam.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="v">2021</div><div class="l">Năm khởi tạo chiến lược</div></div>
+      <div class="hero-stat"><div class="v">30+</div><div class="l">Cổ phiếu cốt lõi VN</div></div>
+      <div class="hero-stat"><div class="v">KL</div><div class="l">Đội ngũ quản lý quỹ</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="gioi-thieu">
+  <div class="intro-grid">
+    <div>
+      <div class="eyebrow">Giới thiệu quỹ</div>
+      <h2>Một chiến lược, xây từ dữ liệu thị trường Việt Nam</h2>
+      <p>K&L Vietnam ETF được phát triển bởi đội ngũ K&L Investment — khởi nguồn từ một danh mục đầu tư cá nhân được ghi nhận trong cộng đồng giao dịch tại Việt Nam, nay chuyển hóa thành một chiến lược có hệ thống, minh bạch và có thể lặp lại.</p>
+      <p>Quỹ theo đuổi phương pháp <strong>đầu tư định lượng kết hợp phân tích cơ bản</strong>: sàng lọc doanh nghiệp theo chất lượng lợi nhuận, dòng tiền và định giá, sau đó cấu trúc danh mục theo mô hình quản trị rủi ro chặt chẽ thay vì dự đoán thị trường ngắn hạn.</p>
+      <p>Mục tiêu của K&L không phải là đánh bại thị trường mỗi quý, mà là <strong>tồn tại qua mọi chu kỳ</strong> và tích lũy lợi nhuận bền vững theo thời gian.</p>
+    </div>
+    <div class="lacquer">
+      <svg viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="420" fill="none"/>
+        <g stroke="#C9A227" stroke-width="0.6" opacity="0.5">
+          <line x1="0" y1="70" x2="400" y2="70"/>
+          <line x1="0" y1="140" x2="400" y2="140"/>
+          <line x1="0" y1="210" x2="400" y2="210"/>
+          <line x1="0" y1="280" x2="400" y2="280"/>
+          <line x1="0" y1="350" x2="400" y2="350"/>
+        </g>
+        <path d="M 10 340 C 60 300, 90 360, 140 300 C 190 240, 220 310, 270 260 C 320 210, 340 260, 390 180" fill="none" stroke="#E4C860" stroke-width="2"/>
+        <path d="M 10 380 C 70 370, 120 320, 180 340 C 240 360, 280 280, 340 300 C 370 310, 380 260, 400 240" fill="none" stroke="#6E9C8C" stroke-width="1.2" opacity="0.7"/>
+        <circle cx="270" cy="260" r="4" fill="#E4C860"/>
+        <circle cx="390" cy="180" r="4" fill="#E4C860"/>
+        <text x="20" y="40" font-family="IBM Plex Mono" font-size="11" fill="#9C9686">VN-INDEX REF.</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="goals" id="muc-tieu">
+  <div class="eyebrow">Mục tiêu phát triển</div>
+  <h2>Bốn trụ cột định hướng sự phát triển của quỹ trong trung và dài hạn</h2>
+  <div class="goal-grid">
+    <div class="goal-card">
+      <div class="goal-num">01</div>
+      <h3>Tăng trưởng NAV bền vững</h3>
+      <p>Ưu tiên tốc độ tăng trưởng tài sản ròng ổn định qua nhiều chu kỳ thị trường, thay vì lợi nhuận đột biến ngắn hạn.</p>
+    </div>
+    <div class="goal-card">
+      <div class="goal-num">02</div>
+      <h3>Mở rộng độ phủ danh mục</h3>
+      <p>Tăng dần số lượng cổ phiếu lõi được nghiên cứu sâu, mở rộng sang các nhóm ngành mới có tiềm năng tăng trưởng dài hạn tại Việt Nam.</p>
+    </div>
+    <div class="goal-card">
+      <div class="goal-num">03</div>
+      <h3>Chuẩn hóa quản trị rủi ro</h3>
+      <p>Xây dựng khung kiểm soát rủi ro và giới hạn tỷ trọng theo tiêu chuẩn quốc tế, phù hợp với đặc thù biến động của thị trường cận biên.</p>
+    </div>
+    <div class="goal-card">
+      <div class="goal-num">04</div>
+      <h3>Minh bạch hóa báo cáo</h3>
+      <p>Công bố định kỳ hiệu suất, cơ cấu danh mục và luận điểm đầu tư, giúp nhà đầu tư theo dõi quỹ một cách rõ ràng và có căn cứ.</p>
+    </div>
+  </div>
+</section>
+
+<section class="audience" id="doi-tuong">
+  <div class="eyebrow">Đối tượng hướng tới</div>
+  <h2>Quỹ này được xây dựng cho ai</h2>
+  <p>K&L Vietnam ETF phù hợp với nhà đầu tư tìm kiếm sự tiếp cận có hệ thống với thị trường chứng khoán Việt Nam, không phù hợp với nhà đầu cơ ngắn hạn tìm lợi nhuận nhanh.</p>
+  <div class="audience-grid">
+    <div class="audience-card">
+      <h3>Nhà đầu tư cá nhân dài hạn</h3>
+      <p>Người muốn tiếp cận rổ cổ phiếu Việt Nam đã qua sàng lọc, thay vì tự chọn từng mã, và ưu tiên tích lũy tài sản theo thời gian.</p>
+    </div>
+    <div class="audience-card">
+      <h3>Nhà đầu tư tổ chức &amp; văn phòng gia đình</h3>
+      <p>Các đơn vị tìm kiếm một chiến lược Việt Nam có luận điểm rõ ràng, báo cáo minh bạch, để phân bổ như một cấu phần trong danh mục đa quốc gia.</p>
+    </div>
+    <div class="audience-card">
+      <h3>Nhà đầu tư nước ngoài quan tâm ASEAN</h3>
+      <p>Người tìm kiếm điểm vào thị trường cận biên tăng trưởng cao của Đông Nam Á thông qua một cấu trúc quỹ có kỷ luật và dễ tiếp cận.</p>
+    </div>
+  </div>
+</section>
+
+<section class="achieve" id="thanh-tuu">
+  <div class="eyebrow">Thành quả của quỹ</div>
+  <h2>Kết quả được đo bằng dữ liệu, không phải bằng lời kể</h2>
+  <p class="sub">Số liệu minh họa hiệu suất chiến lược lõi của K&L Investment — nền tảng cho phương pháp luận của K&L Vietnam ETF.</p>
+
+  <div class="metric-row">
+    <div class="metric"><div class="v">Top-ranked</div><div class="l">Cộng đồng giao dịch VN</div></div>
+    <div class="metric"><div class="v">2018–nay</div><div class="l">Lịch sử giao dịch thực chiến</div></div>
+    <div class="metric"><div class="v">wikifolio</div><div class="l">Quỹ mô phỏng đã niêm yết</div></div>
+    <div class="metric"><div class="v">30+</div><div class="l">Doanh nghiệp theo dõi định kỳ</div></div>
+  </div>
+
+  <div class="timeline">
+    <div class="t-item">
+      <div class="yr">2018</div>
+      <h3>Khởi đầu với danh mục cá nhân</h3>
+      <p>Bắt đầu xây dựng và theo dõi danh mục đầu tư cá nhân trên thị trường chứng khoán Việt Nam, hình thành phương pháp phân tích và kỷ luật giao dịch cốt lõi.</p>
+    </div>
+    <div class="t-item">
+      <div class="yr">2021</div>
+      <h3>Được ghi nhận trong cộng đồng đầu tư</h3>
+      <p>Danh mục được xếp hạng trong nhóm nhà giao dịch hàng đầu tại các cộng đồng đầu tư chứng khoán Việt Nam, dựa trên hiệu suất và tính nhất quán của chiến lược.</p>
+    </div>
+    <div class="t-item">
+      <div class="yr">2023</div>
+      <h3>Ra mắt K&L Investment trên wikifolio</h3>
+      <p>Chuyển hóa chiến lược cá nhân thành quỹ mô phỏng có thể theo dõi công khai, đặt nền móng cho mô hình quản lý quỹ có cấu trúc.</p>
+    </div>
+    <div class="t-item">
+      <div class="yr">2026</div>
+      <h3>Định hình K&L Vietnam ETF</h3>
+      <p>Phát triển khung phương pháp luận ETF chính thức, mở rộng nghiên cứu sang nhiều ngành và chuẩn bị nền tảng công bố thông tin cho nhà đầu tư.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="eyebrow">Kết nối với quỹ</div>
+  <h2>Tìm hiểu chiến lược đầu tư <em>trước khi</em> đưa ra quyết định</h2>
+  <div class="cta-buttons">
+    <a class="btn primary" href="#">Yêu cầu tài liệu quỹ</a>
+    <a class="btn ghost" href="#gioi-thieu">Xem lại chiến lược</a>
+  </div>
+  <p class="disclaimer">Nội dung trên trang này mang tính chất giới thiệu và minh họa, không cấu thành khuyến nghị đầu tư. Hiệu suất trong quá khứ không đảm bảo cho kết quả trong tương lai. Nhà đầu tư nên tự đánh giá hoặc tham khảo ý kiến chuyên gia tài chính được cấp phép trước khi ra quyết định đầu tư.</p>
+</section>
+
+<footer>
+  <div>K&L Vietnam ETF — Hanoi, Vietnam</div>
+  <div class="mono">© 2026 K&L Investment</div>
+</footer>
+
+</body>
+</html>
