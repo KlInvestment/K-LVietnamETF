@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <style>
   :root{
     --navy-950:#0A1120;
@@ -51,16 +52,29 @@
   nav{
     position:fixed;top:0;left:0;right:0;z-index:100;
     display:flex;justify-content:space-between;align-items:center;
-    padding:22px 8vw;
+    padding:20px 8vw;
     background:rgba(10,17,32,0.75);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
+    gap:24px;
   }
-  .nav-mark{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;letter-spacing:0.02em;}
+  .nav-mark{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;letter-spacing:0.02em;white-space:nowrap;}
   .nav-mark span{color:var(--gold-500);}
+  .nav-right{display:flex;align-items:center;gap:32px;}
   .nav-links{display:flex;gap:36px;font-size:0.85rem;color:var(--ivory-400);}
   .nav-links a:hover{color:var(--gold-300);}
-  @media(max-width:720px){.nav-links{display:none;}}
+  @media(max-width:860px){.nav-links{display:none;}}
+
+  .lang-switch{
+    display:flex;gap:2px;border:1px solid var(--line);border-radius:2px;overflow:hidden;
+    font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.06em;
+  }
+  .lang-switch button{
+    background:transparent;border:none;color:var(--ivory-400);
+    padding:8px 12px;cursor:pointer;transition:background 0.2s ease,color 0.2s ease;
+  }
+  .lang-switch button.active{background:var(--gold-500);color:var(--navy-950);}
+  .lang-switch button:hover:not(.active){color:var(--ivory-100);background:var(--navy-800);}
 
   /* HERO */
   .hero{
@@ -123,20 +137,41 @@
   }
   .lacquer svg{width:100%;height:100%;}
 
+  /* VNINDEX CHART */
+  .chart-section{background:var(--navy-900);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .chart-section h2{font-size:clamp(2rem,3.5vw,2.8rem);max-width:640px;margin-bottom:14px;}
+  .chart-section > p.sub{color:var(--ivory-400);max-width:620px;margin-bottom:48px;}
+  .chart-card{
+    border:1px solid var(--line);background:var(--navy-950);
+    padding:32px 28px 20px;border-radius:2px;
+  }
+  .chart-wrap{position:relative;height:380px;}
+  @media(max-width:720px){.chart-wrap{height:280px;}}
+  .chart-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px;}
+  .cs{background:var(--navy-950);padding:18px 20px;}
+  .cs-l{font-size:0.7rem;color:var(--ivory-400);text-transform:uppercase;letter-spacing:0.1em;}
+  .cs-v{font-family:'IBM Plex Mono',monospace;font-size:1.4rem;color:var(--gold-300);margin-top:4px;}
+  .cs-d{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--ivory-400);margin-top:2px;}
+  @media(max-width:560px){.cs-v{font-size:1.05rem;}.cs{padding:14px 12px;}}
+  .chart-note{
+    margin-top:20px;font-size:0.78rem;color:var(--ivory-400);opacity:0.75;
+    border-top:1px solid var(--line);padding-top:16px;line-height:1.7;
+  }
+
   /* MUC TIEU */
-  .goals{background:var(--navy-900);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .goals{background:var(--navy-950);}
   .goals h2{font-size:clamp(2rem,3.5vw,2.8rem);max-width:640px;margin-bottom:64px;}
-  .goal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);}
+  .goal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
   @media(max-width:960px){.goal-grid{grid-template-columns:repeat(2,1fr);}}
   @media(max-width:560px){.goal-grid{grid-template-columns:1fr;}}
-  .goal-card{background:var(--navy-900);padding:36px 28px;min-height:230px;display:flex;flex-direction:column;}
+  .goal-card{background:var(--navy-950);padding:36px 28px;min-height:230px;display:flex;flex-direction:column;}
   .goal-num{font-family:'IBM Plex Mono',monospace;color:var(--jade-300);font-size:0.85rem;margin-bottom:20px;}
   .goal-card h3{font-size:1.2rem;font-weight:500;margin-bottom:12px;}
   .goal-card p{font-size:0.9rem;color:var(--ivory-400);}
 
   /* DOI TUONG */
   .audience h2{font-size:clamp(2rem,3.5vw,2.8rem);margin-bottom:12px;}
-  .audience > p{color:var(--ivory-400);max-width:560px;margin-bottom:56px;}
+  .audience > p.sub{color:var(--ivory-400);max-width:560px;margin-bottom:56px;}
   .audience-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
   @media(max-width:860px){.audience-grid{grid-template-columns:1fr;}}
   .audience-card{
@@ -148,9 +183,47 @@
   .audience-card p{font-size:0.9rem;color:var(--ivory-400);}
 
   /* THANH TUU */
+
+  /* DANH MUC / ITRADER */
+  :root{--gain:#5FBF9F;--loss:#D9695F;}
+  .portfolio{background:var(--navy-950);border-top:1px solid var(--line);}
+  .portfolio h2{font-size:clamp(2rem,3.5vw,2.8rem);max-width:760px;margin-bottom:14px;}
+  .portfolio > p.sub{color:var(--ivory-400);max-width:680px;margin-bottom:56px;}
+  .pf-top{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:28px;}
+  @media(max-width:900px){.pf-top{grid-template-columns:1fr;}}
+  .pf-card{border:1px solid var(--line);background:var(--navy-900);padding:28px;border-radius:2px;}
+  .pf-card h3{font-size:1.05rem;font-weight:500;margin-bottom:20px;color:var(--ivory-100);}
+  .donut-wrap{position:relative;height:230px;display:flex;justify-content:center;}
+  .donut-wrap canvas{max-width:230px;}
+  .donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;width:110px;}
+  .donut-center .dv{font-family:'IBM Plex Mono',monospace;font-size:1.35rem;color:var(--gain);}
+  .donut-center .dl{font-size:0.62rem;color:var(--ivory-400);text-transform:uppercase;letter-spacing:0.06em;line-height:1.3;margin-top:2px;}
+  table.pf-table{width:100%;border-collapse:collapse;margin-top:18px;font-size:0.9rem;}
+  .pf-table th{font-family:'IBM Plex Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ivory-400);font-weight:400;text-align:right;padding:10px 6px;border-bottom:1px solid var(--line);}
+  .pf-table th:first-child,.pf-table td:first-child{text-align:left;}
+  .pf-table td{text-align:right;padding:12px 6px;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono',monospace;}
+  .pf-table td:first-child{color:var(--gold-300);}
+  .pos{color:var(--gain);} .neg{color:var(--loss);}
+  .perf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  @media(max-width:560px){.perf-grid{grid-template-columns:repeat(2,1fr);}}
+  .pt{background:var(--navy-950);padding:18px 14px;}
+  .pt .l{font-size:0.7rem;color:var(--ivory-400);text-transform:uppercase;letter-spacing:0.08em;}
+  .pt .v{font-family:'IBM Plex Mono',monospace;font-size:1.25rem;margin-top:6px;}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:28px;}
+  @media(max-width:960px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
+  .sg{background:var(--navy-900);padding:24px 20px;}
+  .sg .l{font-size:0.72rem;color:var(--ivory-400);text-transform:uppercase;letter-spacing:0.08em;line-height:1.4;min-height:2.2em;}
+  .sg .v{font-family:'IBM Plex Mono',monospace;font-size:1.45rem;color:var(--gold-300);margin-top:10px;}
+  .sg .v.neg{color:var(--loss);}
+  .strat-list{display:grid;grid-template-columns:repeat(2,1fr);gap:0 48px;}
+  @media(max-width:720px){.strat-list{grid-template-columns:1fr;}}
+  .sl{display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--line);font-size:0.9rem;}
+  .sl span:first-child{color:var(--ivory-400);}
+  .sl span:last-child{font-family:'IBM Plex Mono',monospace;color:var(--ivory-100);text-align:right;}
+  .pf-note{margin-top:28px;font-size:0.76rem;color:var(--ivory-400);opacity:0.8;line-height:1.7;max-width:820px;}
   .achieve{background:var(--navy-900);border-top:1px solid var(--line);}
   .achieve h2{font-size:clamp(2rem,3.5vw,2.8rem);margin-bottom:12px;}
-  .achieve > .sub{color:var(--ivory-400);max-width:560px;margin-bottom:64px;}
+  .achieve > p.sub{color:var(--ivory-400);max-width:560px;margin-bottom:64px;}
   .metric-row{
     display:grid;grid-template-columns:repeat(4,1fr);
     border-top:1px solid var(--line);border-bottom:1px solid var(--line);
@@ -207,11 +280,20 @@
 
 <nav>
   <div class="nav-mark">K&L <span>Vietnam ETF</span></div>
-  <div class="nav-links">
-    <a href="#gioi-thieu">Giới thiệu</a>
-    <a href="#muc-tieu">Mục tiêu</a>
-    <a href="#doi-tuong">Đối tượng</a>
-    <a href="#thanh-tuu">Thành tựu</a>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="#gioi-thieu" data-i18n="nav_intro">Giới thiệu</a>
+      <a href="#vnindex" data-i18n="nav_chart">VN-Index</a>
+      <a href="#muc-tieu" data-i18n="nav_goals">Mục tiêu</a>
+      <a href="#doi-tuong" data-i18n="nav_audience">Đối tượng</a>
+      <a href="#danh-muc" data-i18n="nav_portfolio">Danh mục</a>
+      <a href="#thanh-tuu" data-i18n="nav_achieve">Thành tựu</a>
+    </div>
+    <div class="lang-switch" id="langSwitch">
+      <button data-lang="vi" class="active">VI</button>
+      <button data-lang="en">EN</button>
+      <button data-lang="de">DE</button>
+    </div>
   </div>
 </nav>
 
@@ -221,13 +303,13 @@
     <path d="M -50 600 C 120 610, 220 540, 340 560 C 460 580, 540 470, 660 420 C 780 370, 860 440, 980 340 C 1080 260, 1150 280, 1260 150"/>
   </svg>
   <div class="hero-content">
-    <div class="eyebrow">Quỹ hoán đổi danh mục · Thị trường Việt Nam</div>
-    <h1>Vốn kỷ luật.<br>Tăng trưởng <em>Việt Nam.</em></h1>
-    <p class="lede">K&L Vietnam ETF là quỹ đầu tư chỉ số được xây dựng trên nền tảng phân tích định lượng và kỷ luật quản trị rủi ro, theo đuổi tăng trưởng dài hạn cùng các doanh nghiệp dẫn đầu thị trường chứng khoán Việt Nam.</p>
+    <div class="eyebrow" data-i18n="hero_eyebrow">Quỹ hoán đổi danh mục · Thị trường Việt Nam</div>
+    <h1 data-i18n-html="hero_h1">Vốn kỷ luật.<br>Tăng trưởng <em>Việt Nam.</em></h1>
+    <p class="lede" data-i18n="hero_lede">K&L Vietnam ETF là quỹ đầu tư chỉ số được xây dựng trên nền tảng phân tích định lượng và kỷ luật quản trị rủi ro, theo đuổi tăng trưởng dài hạn cùng các doanh nghiệp dẫn đầu thị trường chứng khoán Việt Nam.</p>
     <div class="hero-stats">
-      <div class="hero-stat"><div class="v">2021</div><div class="l">Năm khởi tạo chiến lược</div></div>
-      <div class="hero-stat"><div class="v">30+</div><div class="l">Cổ phiếu cốt lõi VN</div></div>
-      <div class="hero-stat"><div class="v">KL</div><div class="l">Đội ngũ quản lý quỹ</div></div>
+      <div class="hero-stat"><div class="v">2021</div><div class="l" data-i18n="hero_stat1">Năm khởi tạo chiến lược</div></div>
+      <div class="hero-stat"><div class="v">30+</div><div class="l" data-i18n="hero_stat2">Cổ phiếu cốt lõi VN</div></div>
+      <div class="hero-stat"><div class="v">KL</div><div class="l" data-i18n="hero_stat3">Đội ngũ quản lý quỹ</div></div>
     </div>
   </div>
 </section>
@@ -235,11 +317,11 @@
 <section id="gioi-thieu">
   <div class="intro-grid">
     <div>
-      <div class="eyebrow">Giới thiệu quỹ</div>
-      <h2>Một chiến lược, xây từ dữ liệu thị trường Việt Nam</h2>
-      <p>K&L Vietnam ETF được phát triển bởi đội ngũ K&L Investment — khởi nguồn từ một danh mục đầu tư cá nhân được ghi nhận trong cộng đồng giao dịch tại Việt Nam, nay chuyển hóa thành một chiến lược có hệ thống, minh bạch và có thể lặp lại.</p>
-      <p>Quỹ theo đuổi phương pháp <strong>đầu tư định lượng kết hợp phân tích cơ bản</strong>: sàng lọc doanh nghiệp theo chất lượng lợi nhuận, dòng tiền và định giá, sau đó cấu trúc danh mục theo mô hình quản trị rủi ro chặt chẽ thay vì dự đoán thị trường ngắn hạn.</p>
-      <p>Mục tiêu của K&L không phải là đánh bại thị trường mỗi quý, mà là <strong>tồn tại qua mọi chu kỳ</strong> và tích lũy lợi nhuận bền vững theo thời gian.</p>
+      <div class="eyebrow" data-i18n="intro_eyebrow">Giới thiệu quỹ</div>
+      <h2 data-i18n="intro_h2">Một chiến lược, xây từ dữ liệu thị trường Việt Nam</h2>
+      <p data-i18n-html="intro_p1">K&L Vietnam ETF được phát triển bởi đội ngũ K&L Investment — khởi nguồn từ một danh mục đầu tư cá nhân được ghi nhận trong cộng đồng giao dịch tại Việt Nam, nay chuyển hóa thành một chiến lược có hệ thống, minh bạch và có thể lặp lại.</p>
+      <p data-i18n-html="intro_p2">Quỹ theo đuổi phương pháp <strong>đầu tư định lượng kết hợp phân tích cơ bản</strong>: sàng lọc doanh nghiệp theo chất lượng lợi nhuận, dòng tiền và định giá, sau đó cấu trúc danh mục theo mô hình quản trị rủi ro chặt chẽ thay vì dự đoán thị trường ngắn hạn.</p>
+      <p data-i18n-html="intro_p3">Mục tiêu của K&L không phải là đánh bại thị trường mỗi quý, mà là <strong>tồn tại qua mọi chu kỳ</strong> và tích lũy lợi nhuận bền vững theo thời gian.</p>
     </div>
     <div class="lacquer">
       <svg viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg">
@@ -261,103 +343,588 @@
   </div>
 </section>
 
+<section class="chart-section" id="vnindex">
+  <div class="eyebrow" data-i18n="chart_eyebrow">Diễn biến thị trường</div>
+  <h2 data-i18n="chart_h2">VN-Index qua các chu kỳ, 2007–2026</h2>
+  <p class="sub" data-i18n="chart_sub">Hành trình gần hai thập kỷ của chỉ số chứng khoán Việt Nam theo giá đóng cửa tuần — từ đỉnh 2007, đáy khủng hoảng 2009, đến vùng đỉnh lịch sử cuối năm 2025.</p>
+  <div class="chart-card">
+    <div class="chart-wrap"><canvas id="vnindexChart"></canvas></div>
+    <div class="chart-stats">
+      <div class="cs"><div class="cs-l" data-i18n="chart_high">Đỉnh tuần</div><div class="cs-v" id="stHigh">–</div><div class="cs-d" id="stHighD"></div></div>
+      <div class="cs"><div class="cs-l" data-i18n="chart_low">Đáy tuần</div><div class="cs-v" id="stLow">–</div><div class="cs-d" id="stLowD"></div></div>
+      <div class="cs"><div class="cs-l" data-i18n="chart_last">Tuần gần nhất</div><div class="cs-v" id="stLast">–</div><div class="cs-d" id="stLastD"></div></div>
+    </div>
+    <div class="chart-note" data-i18n="chart_note">Dữ liệu: giá đóng cửa theo tuần của VN-Index, từ tuần 02/01/2007 đến tuần 29/12/2025 (984 tuần), lấy từ TCInvest (TCX). Một số tuần ngắn hạn (kỳ nghỉ Tết) không có phiên giao dịch nên không có điểm dữ liệu. Chỉ mang tính tham khảo, vui lòng đối chiếu với dữ liệu chính thức của HOSE trước khi sử dụng cho mục đích đầu tư.</div>
+  </div>
+</section>
+
 <section class="goals" id="muc-tieu">
-  <div class="eyebrow">Mục tiêu phát triển</div>
-  <h2>Bốn trụ cột định hướng sự phát triển của quỹ trong trung và dài hạn</h2>
+  <div class="eyebrow" data-i18n="goals_eyebrow">Mục tiêu phát triển</div>
+  <h2 data-i18n="goals_h2">Bốn trụ cột định hướng sự phát triển của quỹ trong trung và dài hạn</h2>
   <div class="goal-grid">
     <div class="goal-card">
       <div class="goal-num">01</div>
-      <h3>Tăng trưởng NAV bền vững</h3>
-      <p>Ưu tiên tốc độ tăng trưởng tài sản ròng ổn định qua nhiều chu kỳ thị trường, thay vì lợi nhuận đột biến ngắn hạn.</p>
+      <h3 data-i18n="goal1_h">Tăng trưởng NAV bền vững</h3>
+      <p data-i18n="goal1_p">Ưu tiên tốc độ tăng trưởng tài sản ròng ổn định qua nhiều chu kỳ thị trường, thay vì lợi nhuận đột biến ngắn hạn.</p>
     </div>
     <div class="goal-card">
       <div class="goal-num">02</div>
-      <h3>Mở rộng độ phủ danh mục</h3>
-      <p>Tăng dần số lượng cổ phiếu lõi được nghiên cứu sâu, mở rộng sang các nhóm ngành mới có tiềm năng tăng trưởng dài hạn tại Việt Nam.</p>
+      <h3 data-i18n="goal2_h">Mở rộng độ phủ danh mục</h3>
+      <p data-i18n="goal2_p">Tăng dần số lượng cổ phiếu lõi được nghiên cứu sâu, mở rộng sang các nhóm ngành mới có tiềm năng tăng trưởng dài hạn tại Việt Nam.</p>
     </div>
     <div class="goal-card">
       <div class="goal-num">03</div>
-      <h3>Chuẩn hóa quản trị rủi ro</h3>
-      <p>Xây dựng khung kiểm soát rủi ro và giới hạn tỷ trọng theo tiêu chuẩn quốc tế, phù hợp với đặc thù biến động của thị trường cận biên.</p>
+      <h3 data-i18n="goal3_h">Chuẩn hóa quản trị rủi ro</h3>
+      <p data-i18n="goal3_p">Xây dựng khung kiểm soát rủi ro và giới hạn tỷ trọng theo tiêu chuẩn quốc tế, phù hợp với đặc thù biến động của thị trường cận biên.</p>
     </div>
     <div class="goal-card">
       <div class="goal-num">04</div>
-      <h3>Minh bạch hóa báo cáo</h3>
-      <p>Công bố định kỳ hiệu suất, cơ cấu danh mục và luận điểm đầu tư, giúp nhà đầu tư theo dõi quỹ một cách rõ ràng và có căn cứ.</p>
+      <h3 data-i18n="goal4_h">Minh bạch hóa báo cáo</h3>
+      <p data-i18n="goal4_p">Công bố định kỳ hiệu suất, cơ cấu danh mục và luận điểm đầu tư, giúp nhà đầu tư theo dõi quỹ một cách rõ ràng và có căn cứ.</p>
     </div>
   </div>
 </section>
 
 <section class="audience" id="doi-tuong">
-  <div class="eyebrow">Đối tượng hướng tới</div>
-  <h2>Quỹ này được xây dựng cho ai</h2>
-  <p>K&L Vietnam ETF phù hợp với nhà đầu tư tìm kiếm sự tiếp cận có hệ thống với thị trường chứng khoán Việt Nam, không phù hợp với nhà đầu cơ ngắn hạn tìm lợi nhuận nhanh.</p>
+  <div class="eyebrow" data-i18n="aud_eyebrow">Đối tượng hướng tới</div>
+  <h2 data-i18n="aud_h2">Quỹ này được xây dựng cho ai</h2>
+  <p class="sub" data-i18n="aud_sub">K&L Vietnam ETF phù hợp với nhà đầu tư tìm kiếm sự tiếp cận có hệ thống với thị trường chứng khoán Việt Nam, không phù hợp với nhà đầu cơ ngắn hạn tìm lợi nhuận nhanh.</p>
   <div class="audience-grid">
     <div class="audience-card">
-      <h3>Nhà đầu tư cá nhân dài hạn</h3>
-      <p>Người muốn tiếp cận rổ cổ phiếu Việt Nam đã qua sàng lọc, thay vì tự chọn từng mã, và ưu tiên tích lũy tài sản theo thời gian.</p>
+      <h3 data-i18n="aud1_h">Nhà đầu tư cá nhân dài hạn</h3>
+      <p data-i18n="aud1_p">Người muốn tiếp cận rổ cổ phiếu Việt Nam đã qua sàng lọc, thay vì tự chọn từng mã, và ưu tiên tích lũy tài sản theo thời gian.</p>
     </div>
     <div class="audience-card">
-      <h3>Nhà đầu tư tổ chức &amp; văn phòng gia đình</h3>
-      <p>Các đơn vị tìm kiếm một chiến lược Việt Nam có luận điểm rõ ràng, báo cáo minh bạch, để phân bổ như một cấu phần trong danh mục đa quốc gia.</p>
+      <h3 data-i18n="aud2_h">Nhà đầu tư tổ chức &amp; văn phòng gia đình</h3>
+      <p data-i18n="aud2_p">Các đơn vị tìm kiếm một chiến lược Việt Nam có luận điểm rõ ràng, báo cáo minh bạch, để phân bổ như một cấu phần trong danh mục đa quốc gia.</p>
     </div>
     <div class="audience-card">
-      <h3>Nhà đầu tư nước ngoài quan tâm ASEAN</h3>
-      <p>Người tìm kiếm điểm vào thị trường cận biên tăng trưởng cao của Đông Nam Á thông qua một cấu trúc quỹ có kỷ luật và dễ tiếp cận.</p>
+      <h3 data-i18n="aud3_h">Nhà đầu tư nước ngoài quan tâm ASEAN</h3>
+      <p data-i18n="aud3_p">Người tìm kiếm điểm vào thị trường cận biên tăng trưởng cao của Đông Nam Á thông qua một cấu trúc quỹ có kỷ luật và dễ tiếp cận.</p>
     </div>
   </div>
 </section>
 
+<section class="portfolio" id="danh-muc">
+  <div class="eyebrow" data-i18n="pf_eyebrow">Danh mục quỹ</div>
+  <h2 data-i18n="pf_h2">Danh mục đang nắm giữ và số liệu sao chép trên iTrader</h2>
+  <p class="sub" data-i18n="pf_sub">Số liệu từ trang iTrader KnLVietnamETF, chốt ngày 19/11/2026. Dữ liệu thay đổi liên tục và có thể khác thời điểm bạn xem.</p>
+
+  <div class="pf-top">
+    <div class="pf-card">
+      <h3 data-i18n="pf_holdings">Cơ cấu danh mục</h3>
+      <div class="donut-wrap">
+        <canvas id="pfDonut"></canvas>
+        <div class="donut-center"><div class="dv">+7.5%</div><div class="dl" data-i18n="pf_total_pl">Tổng lãi/lỗ danh mục hiện tại</div></div>
+      </div>
+      <table class="pf-table">
+        <thead><tr><th data-i18n="pf_col_code">Mã</th><th data-i18n="pf_col_pl">Lãi/Lỗ</th><th data-i18n="pf_col_w">Tỷ trọng</th></tr></thead>
+        <tbody>
+          <tr><td>VHM</td><td class="pos">+12.9%</td><td>75.6%</td></tr>
+          <tr><td>HPG</td><td class="neg">-9.3%</td><td>24.2%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pf-card">
+      <h3 data-i18n="pf_perf">Hiệu quả đầu tư</h3>
+      <div class="perf-grid">
+        <div class="pt"><div class="l" data-i18n="pf_all">Từ lúc mở</div><div class="v neg">-14.8%</div></div>
+        <div class="pt"><div class="l" data-i18n="pf_1w">1 tuần</div><div class="v neg">-2.4%</div></div>
+        <div class="pt"><div class="l" data-i18n="pf_1m">1 tháng</div><div class="v neg">-2.0%</div></div>
+        <div class="pt"><div class="l" data-i18n="pf_3m">3 tháng</div><div class="v neg">-5.6%</div></div>
+        <div class="pt"><div class="l" data-i18n="pf_6m">6 tháng</div><div class="v neg">-20.6%</div></div>
+        <div class="pt"><div class="l" data-i18n="pf_1y">1 năm</div><div class="v neg">-13.7%</div></div>
+        <div class="pt"><div class="l" data-i18n="pf_3y">3 năm</div><div class="v neg">-14.8%</div></div>
+        <div class="pt"><div class="l" data-i18n="pf_annual">Lãi năm</div><div class="v neg">-11.3%</div></div>
+      </div>
+      <h3 style="margin-top:32px" data-i18n="pf_strategy">Thông số chiến lược</h3>
+      <div class="sl"><span data-i18n="pf_style">Định hướng</span><span data-i18n="pf_style_v">Tăng trưởng vốn</span></div>
+      <div class="sl"><span data-i18n="pf_horizon">Thời gian đầu tư</span><span data-i18n="pf_horizon_v">Trung hạn</span></div>
+      <div class="sl"><span data-i18n="pf_exp">Lợi tức kỳ vọng</span><span>&gt;25%</span></div>
+      <div class="sl"><span data-i18n="pf_vol">Độ biến động</span><span>4/10</span></div>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="sg"><div class="l" data-i18n="pf_copiers">Người sao chép</div><div class="v">10</div></div>
+    <div class="sg"><div class="l" data-i18n="pf_followers">Người theo dõi</div><div class="v">22</div></div>
+    <div class="sg"><div class="l" data-i18n="pf_aum">AUM sao chép</div><div class="v" data-i18n="pf_aum_v">2,4 tỷ VND</div></div>
+    <div class="sg"><div class="l" data-i18n="pf_min">Sao chép tối thiểu</div><div class="v" data-i18n="pf_min_v">5.000.000 VND</div></div>
+    <div class="sg"><div class="l" data-i18n="pf_avg">Giá trị sao chép TB / nhà đầu tư</div><div class="v" data-i18n="pf_avg_v">246,4 triệu VND</div></div>
+    <div class="sg"><div class="l" data-i18n="pf_dur">Thời gian sao chép TB</div><div class="v" data-i18n="pf_dur_v">302 ngày</div></div>
+    <div class="sg"><div class="l" data-i18n="pf_success">Tỷ lệ sao chép thành công</div><div class="v">87.3%</div></div>
+    <div class="sg"><div class="l" data-i18n="pf_aum30">Biến động AUM 30 ngày</div><div class="v neg" data-i18n="pf_aum30_v">-20,1 triệu VND</div></div>
+  </div>
+
+  <div class="pf-card">
+    <h3 data-i18n="pf_terms">Điều khoản sao chép</h3>
+    <div class="strat-list">
+      <div class="sl"><span data-i18n="pf_rank">Hạng</span><span>Rookie</span></div>
+      <div class="sl"><span data-i18n="pf_fee">Phí quản lý</span><span data-i18n="pf_fee_v">2,0%/năm</span></div>
+      <div class="sl"><span data-i18n="pf_perfee">Thưởng hiệu quả</span><span data-i18n="pf_perfee_v">20% (khi lãi &gt;15%/năm)</span></div>
+      <div class="sl"><span data-i18n="pf_slip">Chênh lệch giá khớp TB so với iTrader</span><span class="neg">-0.4%</span></div>
+    </div>
+  </div>
+
+  <p class="pf-note" data-i18n="pf_note">Nguồn: trang iTrader của KnLVietnamETF, chụp ngày 19/11/2026. “Từ lúc mở” tương ứng mục “Tất cả” trên iTrader. Lãi/lỗ danh mục hiện tại là lãi/lỗ chưa thực hiện của các vị thế đang nắm giữ, khác với hiệu quả đầu tư của toàn bộ tài khoản kể từ khi mở. Hiệu suất trong quá khứ không đảm bảo kết quả trong tương lai.</p>
+</section>
+
 <section class="achieve" id="thanh-tuu">
-  <div class="eyebrow">Thành quả của quỹ</div>
-  <h2>Kết quả được đo bằng dữ liệu, không phải bằng lời kể</h2>
-  <p class="sub">Số liệu minh họa hiệu suất chiến lược lõi của K&L Investment — nền tảng cho phương pháp luận của K&L Vietnam ETF.</p>
+  <div class="eyebrow" data-i18n="ach_eyebrow">Thành quả của quỹ</div>
+  <h2 data-i18n="ach_h2">Kết quả được đo bằng dữ liệu, không phải bằng lời kể</h2>
+  <p class="sub" data-i18n="ach_sub">Số liệu minh họa hiệu suất chiến lược lõi của K&L Investment — nền tảng cho phương pháp luận của K&L Vietnam ETF.</p>
 
   <div class="metric-row">
-    <div class="metric"><div class="v">Top-ranked</div><div class="l">Cộng đồng giao dịch VN</div></div>
-    <div class="metric"><div class="v">2018–nay</div><div class="l">Lịch sử giao dịch thực chiến</div></div>
-    <div class="metric"><div class="v">wikifolio</div><div class="l">Quỹ mô phỏng đã niêm yết</div></div>
-    <div class="metric"><div class="v">30+</div><div class="l">Doanh nghiệp theo dõi định kỳ</div></div>
+    <div class="metric"><div class="v" data-i18n="metric1_v">Top-ranked</div><div class="l" data-i18n="metric1_l">Cộng đồng giao dịch VN</div></div>
+    <div class="metric"><div class="v">2018–nay</div><div class="l" data-i18n="metric2_l">Lịch sử giao dịch thực chiến</div></div>
+    <div class="metric"><div class="v">wikifolio</div><div class="l" data-i18n="metric3_l">Quỹ mô phỏng đã niêm yết</div></div>
+    <div class="metric"><div class="v">30+</div><div class="l" data-i18n="metric4_l">Doanh nghiệp theo dõi định kỳ</div></div>
   </div>
 
   <div class="timeline">
     <div class="t-item">
       <div class="yr">2018</div>
-      <h3>Khởi đầu với danh mục cá nhân</h3>
-      <p>Bắt đầu xây dựng và theo dõi danh mục đầu tư cá nhân trên thị trường chứng khoán Việt Nam, hình thành phương pháp phân tích và kỷ luật giao dịch cốt lõi.</p>
+      <h3 data-i18n="t1_h">Khởi đầu với danh mục cá nhân</h3>
+      <p data-i18n="t1_p">Bắt đầu xây dựng và theo dõi danh mục đầu tư cá nhân trên thị trường chứng khoán Việt Nam, hình thành phương pháp phân tích và kỷ luật giao dịch cốt lõi.</p>
     </div>
     <div class="t-item">
       <div class="yr">2021</div>
-      <h3>Được ghi nhận trong cộng đồng đầu tư</h3>
-      <p>Danh mục được xếp hạng trong nhóm nhà giao dịch hàng đầu tại các cộng đồng đầu tư chứng khoán Việt Nam, dựa trên hiệu suất và tính nhất quán của chiến lược.</p>
+      <h3 data-i18n="t2_h">Được ghi nhận trong cộng đồng đầu tư</h3>
+      <p data-i18n="t2_p">Danh mục được xếp hạng trong nhóm nhà giao dịch hàng đầu tại các cộng đồng đầu tư chứng khoán Việt Nam, dựa trên hiệu suất và tính nhất quán của chiến lược.</p>
     </div>
     <div class="t-item">
       <div class="yr">2023</div>
-      <h3>Ra mắt K&L Investment trên wikifolio</h3>
-      <p>Chuyển hóa chiến lược cá nhân thành quỹ mô phỏng có thể theo dõi công khai, đặt nền móng cho mô hình quản lý quỹ có cấu trúc.</p>
+      <h3 data-i18n="t3_h">Ra mắt K&L Investment trên wikifolio</h3>
+      <p data-i18n="t3_p">Chuyển hóa chiến lược cá nhân thành quỹ mô phỏng có thể theo dõi công khai, đặt nền móng cho mô hình quản lý quỹ có cấu trúc.</p>
     </div>
     <div class="t-item">
       <div class="yr">2026</div>
-      <h3>Định hình K&L Vietnam ETF</h3>
-      <p>Phát triển khung phương pháp luận ETF chính thức, mở rộng nghiên cứu sang nhiều ngành và chuẩn bị nền tảng công bố thông tin cho nhà đầu tư.</p>
+      <h3 data-i18n="t4_h">Định hình K&L Vietnam ETF</h3>
+      <p data-i18n="t4_p">Phát triển khung phương pháp luận ETF chính thức, mở rộng nghiên cứu sang nhiều ngành và chuẩn bị nền tảng công bố thông tin cho nhà đầu tư.</p>
     </div>
   </div>
 </section>
 
 <section class="cta">
-  <div class="eyebrow">Kết nối với quỹ</div>
-  <h2>Tìm hiểu chiến lược đầu tư <em>trước khi</em> đưa ra quyết định</h2>
+  <div class="eyebrow" data-i18n="cta_eyebrow">Kết nối với quỹ</div>
+  <h2 data-i18n-html="cta_h2">Tìm hiểu chiến lược đầu tư <em>trước khi</em> đưa ra quyết định</h2>
   <div class="cta-buttons">
-    <a class="btn primary" href="#">Yêu cầu tài liệu quỹ</a>
-    <a class="btn ghost" href="#gioi-thieu">Xem lại chiến lược</a>
+    <a class="btn primary" href="#" data-i18n="cta_btn1">Yêu cầu tài liệu quỹ</a>
+    <a class="btn ghost" href="#gioi-thieu" data-i18n="cta_btn2">Xem lại chiến lược</a>
   </div>
-  <p class="disclaimer">Nội dung trên trang này mang tính chất giới thiệu và minh họa, không cấu thành khuyến nghị đầu tư. Hiệu suất trong quá khứ không đảm bảo cho kết quả trong tương lai. Nhà đầu tư nên tự đánh giá hoặc tham khảo ý kiến chuyên gia tài chính được cấp phép trước khi ra quyết định đầu tư.</p>
+  <p class="disclaimer" data-i18n="disclaimer">Nội dung trên trang này mang tính chất giới thiệu và minh họa, không cấu thành khuyến nghị đầu tư. Hiệu suất trong quá khứ không đảm bảo cho kết quả trong tương lai. Nhà đầu tư nên tự đánh giá hoặc tham khảo ý kiến chuyên gia tài chính được cấp phép trước khi ra quyết định đầu tư.</p>
 </section>
 
 <footer>
-  <div>K&L Vietnam ETF — Hanoi, Vietnam</div>
+  <div data-i18n="footer_loc">K&L Vietnam ETF — Hanoi, Vietnam</div>
   <div class="mono">© 2026 K&L Investment</div>
 </footer>
+
+<script>
+/* ---------- i18n ---------- */
+const translations = {
+  vi: {
+    nav_intro:"Giới thiệu", nav_chart:"VN-Index", nav_goals:"Mục tiêu", nav_audience:"Đối tượng", nav_achieve:"Thành tựu",
+    hero_eyebrow:"Quỹ hoán đổi danh mục · Thị trường Việt Nam",
+    hero_h1:"Vốn kỷ luật.<br>Tăng trưởng <em>Việt Nam.</em>",
+    hero_lede:"K&L Vietnam ETF là quỹ đầu tư chỉ số được xây dựng trên nền tảng phân tích định lượng và kỷ luật quản trị rủi ro, theo đuổi tăng trưởng dài hạn cùng các doanh nghiệp dẫn đầu thị trường chứng khoán Việt Nam.",
+    hero_stat1:"Năm khởi tạo chiến lược", hero_stat2:"Cổ phiếu cốt lõi VN", hero_stat3:"Đội ngũ quản lý quỹ",
+    intro_eyebrow:"Giới thiệu quỹ",
+    intro_h2:"Một chiến lược, xây từ dữ liệu thị trường Việt Nam",
+    intro_p1:"K&L Vietnam ETF được phát triển bởi đội ngũ K&L Investment — khởi nguồn từ một danh mục đầu tư cá nhân được ghi nhận trong cộng đồng giao dịch tại Việt Nam, nay chuyển hóa thành một chiến lược có hệ thống, minh bạch và có thể lặp lại.",
+    intro_p2:"Quỹ theo đuổi phương pháp <strong>đầu tư định lượng kết hợp phân tích cơ bản</strong>: sàng lọc doanh nghiệp theo chất lượng lợi nhuận, dòng tiền và định giá, sau đó cấu trúc danh mục theo mô hình quản trị rủi ro chặt chẽ thay vì dự đoán thị trường ngắn hạn.",
+    intro_p3:"Mục tiêu của K&L không phải là đánh bại thị trường mỗi quý, mà là <strong>tồn tại qua mọi chu kỳ</strong> và tích lũy lợi nhuận bền vững theo thời gian.",
+    chart_eyebrow:"Diễn biến thị trường",
+    chart_h2:"VN-Index qua các chu kỳ, 2007–2026",
+    chart_sub:"Hành trình gần hai thập kỷ của chỉ số chứng khoán Việt Nam theo giá đóng cửa tuần — từ đỉnh 2007, đáy khủng hoảng 2009, đến vùng đỉnh lịch sử cuối năm 2025.",
+    chart_note:"Dữ liệu: giá đóng cửa theo tuần của VN-Index, từ tuần 02/01/2007 đến tuần 29/12/2025 (984 tuần), lấy từ TCInvest (TCX). Một số tuần ngắn hạn (kỳ nghỉ Tết) không có phiên giao dịch nên không có điểm dữ liệu. Chỉ mang tính tham khảo, vui lòng đối chiếu với dữ liệu chính thức của HOSE trước khi sử dụng cho mục đích đầu tư.",
+    chart_high:"Đỉnh tuần", chart_low:"Đáy tuần", chart_last:"Tuần gần nhất",
+    goals_eyebrow:"Mục tiêu phát triển",
+    goals_h2:"Bốn trụ cột định hướng sự phát triển của quỹ trong trung và dài hạn",
+    goal1_h:"Tăng trưởng NAV bền vững", goal1_p:"Ưu tiên tốc độ tăng trưởng tài sản ròng ổn định qua nhiều chu kỳ thị trường, thay vì lợi nhuận đột biến ngắn hạn.",
+    goal2_h:"Mở rộng độ phủ danh mục", goal2_p:"Tăng dần số lượng cổ phiếu lõi được nghiên cứu sâu, mở rộng sang các nhóm ngành mới có tiềm năng tăng trưởng dài hạn tại Việt Nam.",
+    goal3_h:"Chuẩn hóa quản trị rủi ro", goal3_p:"Xây dựng khung kiểm soát rủi ro và giới hạn tỷ trọng theo tiêu chuẩn quốc tế, phù hợp với đặc thù biến động của thị trường cận biên.",
+    goal4_h:"Minh bạch hóa báo cáo", goal4_p:"Công bố định kỳ hiệu suất, cơ cấu danh mục và luận điểm đầu tư, giúp nhà đầu tư theo dõi quỹ một cách rõ ràng và có căn cứ.",
+    aud_eyebrow:"Đối tượng hướng tới",
+    aud_h2:"Quỹ này được xây dựng cho ai",
+    aud_sub:"K&L Vietnam ETF phù hợp với nhà đầu tư tìm kiếm sự tiếp cận có hệ thống với thị trường chứng khoán Việt Nam, không phù hợp với nhà đầu cơ ngắn hạn tìm lợi nhuận nhanh.",
+    aud1_h:"Nhà đầu tư cá nhân dài hạn", aud1_p:"Người muốn tiếp cận rổ cổ phiếu Việt Nam đã qua sàng lọc, thay vì tự chọn từng mã, và ưu tiên tích lũy tài sản theo thời gian.",
+    aud2_h:"Nhà đầu tư tổ chức &amp; văn phòng gia đình", aud2_p:"Các đơn vị tìm kiếm một chiến lược Việt Nam có luận điểm rõ ràng, báo cáo minh bạch, để phân bổ như một cấu phần trong danh mục đa quốc gia.",
+    aud3_h:"Nhà đầu tư nước ngoài quan tâm ASEAN", aud3_p:"Người tìm kiếm điểm vào thị trường cận biên tăng trưởng cao của Đông Nam Á thông qua một cấu trúc quỹ có kỷ luật và dễ tiếp cận.",
+    ach_eyebrow:"Thành quả của quỹ",
+    ach_h2:"Kết quả được đo bằng dữ liệu, không phải bằng lời kể",
+    ach_sub:"Số liệu minh họa hiệu suất chiến lược lõi của K&L Investment — nền tảng cho phương pháp luận của K&L Vietnam ETF.",
+    metric1_v:"Top-ranked", metric1_l:"Cộng đồng giao dịch VN",
+    metric2_l:"Lịch sử giao dịch thực chiến",
+    metric3_l:"Quỹ mô phỏng đã niêm yết",
+    metric4_l:"Doanh nghiệp theo dõi định kỳ",
+    t1_h:"Khởi đầu với danh mục cá nhân", t1_p:"Bắt đầu xây dựng và theo dõi danh mục đầu tư cá nhân trên thị trường chứng khoán Việt Nam, hình thành phương pháp phân tích và kỷ luật giao dịch cốt lõi.",
+    t2_h:"Được ghi nhận trong cộng đồng đầu tư", t2_p:"Danh mục được xếp hạng trong nhóm nhà giao dịch hàng đầu tại các cộng đồng đầu tư chứng khoán Việt Nam, dựa trên hiệu suất và tính nhất quán của chiến lược.",
+    t3_h:"Ra mắt K&L Investment trên wikifolio", t3_p:"Chuyển hóa chiến lược cá nhân thành quỹ mô phỏng có thể theo dõi công khai, đặt nền móng cho mô hình quản lý quỹ có cấu trúc.",
+    t4_h:"Định hình K&L Vietnam ETF", t4_p:"Phát triển khung phương pháp luận ETF chính thức, mở rộng nghiên cứu sang nhiều ngành và chuẩn bị nền tảng công bố thông tin cho nhà đầu tư.",
+    nav_portfolio:"Danh mục",
+    pf_eyebrow:"Danh mục quỹ",
+    pf_h2:"Danh mục đang nắm giữ và số liệu sao chép trên iTrader",
+    pf_sub:"Số liệu từ trang iTrader KnLVietnamETF, chốt ngày 19/11/2026. Dữ liệu thay đổi liên tục và có thể khác thời điểm bạn xem.",
+    pf_holdings:"Cơ cấu danh mục",
+    pf_total_pl:"Tổng lãi/lỗ danh mục hiện tại",
+    pf_col_code:"Mã",
+    pf_col_pl:"Lãi/Lỗ",
+    pf_col_w:"Tỷ trọng",
+    pf_perf:"Hiệu quả đầu tư",
+    pf_all:"Từ lúc mở",
+    pf_1w:"1 tuần",
+    pf_1m:"1 tháng",
+    pf_3m:"3 tháng",
+    pf_6m:"6 tháng",
+    pf_1y:"1 năm",
+    pf_3y:"3 năm",
+    pf_annual:"Lãi năm",
+    pf_strategy:"Thông số chiến lược",
+    pf_style:"Định hướng",
+    pf_style_v:"Tăng trưởng vốn",
+    pf_horizon:"Thời gian đầu tư",
+    pf_horizon_v:"Trung hạn",
+    pf_exp:"Lợi tức kỳ vọng",
+    pf_vol:"Độ biến động",
+    pf_copiers:"Người sao chép",
+    pf_followers:"Người theo dõi",
+    pf_aum:"AUM sao chép",
+    pf_aum_v:"2,4 tỷ VND",
+    pf_min:"Sao chép tối thiểu",
+    pf_min_v:"5.000.000 VND",
+    pf_avg:"Giá trị sao chép TB / nhà đầu tư",
+    pf_avg_v:"246,4 triệu VND",
+    pf_dur:"Thời gian sao chép TB",
+    pf_dur_v:"302 ngày",
+    pf_success:"Tỷ lệ sao chép thành công",
+    pf_aum30:"Biến động AUM 30 ngày",
+    pf_aum30_v:"-20,1 triệu VND",
+    pf_terms:"Điều khoản sao chép",
+    pf_rank:"Hạng",
+    pf_fee:"Phí quản lý",
+    pf_fee_v:"2,0%/năm",
+    pf_perfee:"Thưởng hiệu quả",
+    pf_perfee_v:"20% (khi lãi >15%/năm)",
+    pf_slip:"Chênh lệch giá khớp TB so với iTrader",
+    pf_note:"Nguồn: trang iTrader của KnLVietnamETF, chụp ngày 19/11/2026. “Từ lúc mở” tương ứng mục “Tất cả” trên iTrader. Lãi/lỗ danh mục hiện tại là lãi/lỗ chưa thực hiện của các vị thế đang nắm giữ, khác với hiệu quả đầu tư của toàn bộ tài khoản kể từ khi mở. Hiệu suất trong quá khứ không đảm bảo kết quả trong tương lai.",
+    cta_eyebrow:"Kết nối với quỹ",
+    cta_h2:"Tìm hiểu chiến lược đầu tư <em>trước khi</em> đưa ra quyết định",
+    cta_btn1:"Yêu cầu tài liệu quỹ", cta_btn2:"Xem lại chiến lược",
+    disclaimer:"Nội dung trên trang này mang tính chất giới thiệu và minh họa, không cấu thành khuyến nghị đầu tư. Hiệu suất trong quá khứ không đảm bảo cho kết quả trong tương lai. Nhà đầu tư nên tự đánh giá hoặc tham khảo ý kiến chuyên gia tài chính được cấp phép trước khi ra quyết định đầu tư.",
+    footer_loc:"K&L Vietnam ETF — Hanoi, Vietnam"
+  },
+  en: {
+    nav_intro:"About", nav_chart:"VN-Index", nav_goals:"Objectives", nav_audience:"Who it's for", nav_achieve:"Track record",
+    hero_eyebrow:"Exchange-Traded Fund · Vietnam Market",
+    hero_h1:"Disciplined capital.<br>Vietnam <em>growth.</em>",
+    hero_lede:"K&L Vietnam ETF is an index fund built on quantitative analysis and disciplined risk management, pursuing long-term growth alongside Vietnam's leading listed companies.",
+    hero_stat1:"Strategy inception year", hero_stat2:"Core Vietnamese holdings", hero_stat3:"Fund management team",
+    intro_eyebrow:"About the fund",
+    intro_h2:"A strategy built on Vietnamese market data",
+    intro_p1:"K&L Vietnam ETF is developed by the K&L Investment team — originating from a personal portfolio recognized within Vietnam's trading community, now transformed into a systematic, transparent, repeatable strategy.",
+    intro_p2:"The fund follows a <strong>quantitative approach combined with fundamental analysis</strong>: screening companies by earnings quality, cash flow and valuation, then structuring the portfolio under strict risk-management rules rather than short-term market timing.",
+    intro_p3:"K&L's goal is not to beat the market every quarter, but to <strong>survive every cycle</strong> and compound returns sustainably over time.",
+    chart_eyebrow:"Market performance",
+    chart_h2:"VN-Index across market cycles, 2007–2026",
+    chart_sub:"Nearly two decades of Vietnam's benchmark index on weekly closes — from the 2007 peak and the 2009 crisis trough to record highs at the end of 2025.",
+    chart_note:"Data: weekly closing levels of the VN-Index, from the week of 2 Jan 2007 to the week of 29 Dec 2025 (984 weeks), sourced from TCInvest (TCX). Weeks around Tet holidays with no trading sessions have no data point. For reference only — please verify against official HOSE data before any investment use.",
+    chart_high:"Weekly high", chart_low:"Weekly low", chart_last:"Latest week",
+    goals_eyebrow:"Development objectives",
+    goals_h2:"Four pillars guiding the fund's medium- and long-term development",
+    goal1_h:"Sustainable NAV growth", goal1_p:"Prioritizing steady net-asset growth across multiple market cycles, rather than short-term outsized returns.",
+    goal2_h:"Expanding portfolio coverage", goal2_p:"Gradually increasing the number of deeply-researched core holdings, extending into new sectors with long-term growth potential in Vietnam.",
+    goal3_h:"Standardizing risk governance", goal3_p:"Building a risk-control framework and position-limit rules aligned with international standards, suited to the volatility of a frontier market.",
+    goal4_h:"Greater reporting transparency", goal4_p:"Periodically disclosing performance, portfolio composition and investment theses, so investors can track the fund clearly and with evidence.",
+    aud_eyebrow:"Who it's for",
+    aud_h2:"Who this fund is built for",
+    aud_sub:"K&L Vietnam ETF suits investors seeking systematic access to Vietnam's stock market — not short-term speculators chasing quick gains.",
+    aud1_h:"Long-term individual investors", aud1_p:"Investors who want access to a screened basket of Vietnamese equities rather than picking individual stocks, and who prioritize compounding wealth over time.",
+    aud2_h:"Institutions &amp; family offices", aud2_p:"Organizations seeking a Vietnam strategy with a clear thesis and transparent reporting, to allocate as one component of a multi-country portfolio.",
+    aud3_h:"Foreign investors interested in ASEAN", aud3_p:"Investors seeking exposure to Southeast Asia's high-growth frontier market through a disciplined, accessible fund structure.",
+    ach_eyebrow:"Track record",
+    ach_h2:"Results measured by data, not by narrative",
+    ach_sub:"Illustrative figures on K&L Investment's core strategy performance — the foundation of K&L Vietnam ETF's methodology.",
+    metric1_v:"Top-ranked", metric1_l:"Vietnam trading community",
+    metric2_l:"Live trading track record",
+    metric3_l:"Listed simulated fund",
+    metric4_l:"Companies tracked regularly",
+    t1_h:"Started with a personal portfolio", t1_p:"Began building and tracking a personal investment portfolio in the Vietnamese stock market, forming the core analytical method and trading discipline.",
+    t2_h:"Recognized in the investment community", t2_p:"The portfolio was ranked among the top traders in Vietnamese investment communities, based on performance and consistency.",
+    t3_h:"Launched K&L Investment on wikifolio", t3_p:"Converted the personal strategy into a publicly trackable simulated fund, laying the groundwork for a structured fund-management model.",
+    t4_h:"Shaping K&L Vietnam ETF", t4_p:"Developed the formal ETF methodology framework, expanded research across sectors, and prepared the disclosure infrastructure for investors.",
+    nav_portfolio:"Portfolio",
+    pf_eyebrow:"Fund portfolio",
+    pf_h2:"Current holdings and copy-trading data on iTrader",
+    pf_sub:"Figures from the KnLVietnamETF iTrader page, as of 19 Nov 2026. Data changes continuously and may differ from what you see at the time of viewing.",
+    pf_holdings:"Portfolio allocation",
+    pf_total_pl:"Total P/L of current holdings",
+    pf_col_code:"Ticker",
+    pf_col_pl:"P/L",
+    pf_col_w:"Weight",
+    pf_perf:"Investment performance",
+    pf_all:"Since inception",
+    pf_1w:"1 week",
+    pf_1m:"1 month",
+    pf_3m:"3 months",
+    pf_6m:"6 months",
+    pf_1y:"1 year",
+    pf_3y:"3 years",
+    pf_annual:"Annualised return",
+    pf_strategy:"Strategy profile",
+    pf_style:"Orientation",
+    pf_style_v:"Capital growth",
+    pf_horizon:"Investment horizon",
+    pf_horizon_v:"Medium term",
+    pf_exp:"Target return",
+    pf_vol:"Volatility score",
+    pf_copiers:"Copiers",
+    pf_followers:"Followers",
+    pf_aum:"Copied AUM",
+    pf_aum_v:"VND 2.4 bn",
+    pf_min:"Minimum copy amount",
+    pf_min_v:"VND 5,000,000",
+    pf_avg:"Avg. copied value per investor",
+    pf_avg_v:"VND 246.4 mn",
+    pf_dur:"Avg. copy duration",
+    pf_dur_v:"302 days",
+    pf_success:"Successful copy rate",
+    pf_aum30:"AUM change, 30 days",
+    pf_aum30_v:"VND -20.1 mn",
+    pf_terms:"Copy terms",
+    pf_rank:"Rank",
+    pf_fee:"Management fee",
+    pf_fee_v:"2.0% p.a.",
+    pf_perfee:"Performance fee",
+    pf_perfee_v:"20% (on returns above 15% p.a.)",
+    pf_slip:"Avg. fill-price deviation vs. iTrader",
+    pf_note:"Source: KnLVietnamETF iTrader page, captured 19 Nov 2026. “Since inception” corresponds to “All” on iTrader. P/L of current holdings is the unrealised gain/loss on open positions and differs from the account’s total investment performance since inception. Past performance does not guarantee future results.",
+    cta_eyebrow:"Connect with the fund",
+    cta_h2:"Understand the investment strategy <em>before</em> you decide",
+    cta_btn1:"Request fund documents", cta_btn2:"Review the strategy",
+    disclaimer:"The content on this page is illustrative and introductory in nature and does not constitute investment advice. Past performance does not guarantee future results. Investors should conduct their own assessment or consult a licensed financial professional before making investment decisions.",
+    footer_loc:"K&L Vietnam ETF — Hanoi, Vietnam"
+  },
+  de: {
+    nav_intro:"Über uns", nav_chart:"VN-Index", nav_goals:"Ziele", nav_audience:"Zielgruppe", nav_achieve:"Erfolge",
+    hero_eyebrow:"Indexfonds (ETF) · Vietnamesischer Markt",
+    hero_h1:"Diszipliniertes Kapital.<br>Vietnams <em>Wachstum.</em>",
+    hero_lede:"K&L Vietnam ETF ist ein Indexfonds, der auf quantitativer Analyse und diszipliniertem Risikomanagement basiert und langfristiges Wachstum gemeinsam mit Vietnams führenden börsennotierten Unternehmen anstrebt.",
+    hero_stat1:"Gründungsjahr der Strategie", hero_stat2:"Vietnamesische Kernwerte", hero_stat3:"Fondsmanagement-Team",
+    intro_eyebrow:"Über den Fonds",
+    intro_h2:"Eine Strategie, aufgebaut auf vietnamesischen Marktdaten",
+    intro_p1:"K&L Vietnam ETF wird vom Team von K&L Investment entwickelt — entstanden aus einem privaten Portfolio, das in der vietnamesischen Trading-Community Anerkennung fand und nun in eine systematische, transparente und wiederholbare Strategie überführt wurde.",
+    intro_p2:"Der Fonds verfolgt einen <strong>quantitativen Ansatz kombiniert mit Fundamentalanalyse</strong>: Unternehmen werden nach Gewinnqualität, Cashflow und Bewertung selektiert, das Portfolio wird anschließend nach strengen Risikomanagement-Regeln strukturiert — nicht nach kurzfristigem Markt-Timing.",
+    intro_p3:"Das Ziel von K&L ist nicht, den Markt jedes Quartal zu schlagen, sondern <strong>jeden Zyklus zu überstehen</strong> und Erträge nachhaltig über die Zeit zu kumulieren.",
+    chart_eyebrow:"Marktentwicklung",
+    chart_h2:"VN-Index über die Marktzyklen, 2007–2026",
+    chart_sub:"Fast zwei Jahrzehnte des vietnamesischen Leitindex auf Wochenschlusskursbasis — vom Höchststand 2007 über den Krisentiefpunkt 2009 bis zu Rekordständen Ende 2025.",
+    chart_note:"Daten: wöchentliche Schlusskurse des VN-Index, von der Woche des 2. Januar 2007 bis zur Woche des 29. Dezember 2025 (984 Wochen), Quelle: TCInvest (TCX). Wochen rund um die Tet-Feiertage ohne Handelstage haben keinen Datenpunkt. Nur zur Information — vor jeder Anlageentscheidung bitte mit den offiziellen HOSE-Daten abgleichen.",
+    chart_high:"Wochenhoch", chart_low:"Wochentief", chart_last:"Letzte Woche",
+    goals_eyebrow:"Entwicklungsziele",
+    goals_h2:"Vier Säulen für die mittel- und langfristige Entwicklung des Fonds",
+    goal1_h:"Nachhaltiges NAV-Wachstum", goal1_p:"Vorrang für ein stabiles Wachstum des Nettoinventarwerts über mehrere Marktzyklen hinweg, statt kurzfristiger Ausreißergewinne.",
+    goal2_h:"Erweiterung der Portfolioabdeckung", goal2_p:"Schrittweise Erhöhung der Zahl tiefgehend recherchierter Kernwerte und Ausweitung auf neue Branchen mit langfristigem Wachstumspotenzial in Vietnam.",
+    goal3_h:"Standardisierung der Risikosteuerung", goal3_p:"Aufbau eines Risikokontroll-Rahmens und von Positionslimits nach internationalen Standards, angepasst an die Volatilität eines Grenzmarktes.",
+    goal4_h:"Mehr Transparenz in der Berichterstattung", goal4_p:"Regelmäßige Offenlegung von Performance, Portfoliozusammensetzung und Investmentthesen, damit Anleger den Fonds klar und nachvollziehbar verfolgen können.",
+    aud_eyebrow:"Zielgruppe",
+    aud_h2:"Für wen dieser Fonds konzipiert ist",
+    aud_sub:"K&L Vietnam ETF eignet sich für Anleger, die einen systematischen Zugang zum vietnamesischen Aktienmarkt suchen — nicht für kurzfristige Spekulanten auf schnelle Gewinne.",
+    aud1_h:"Langfristige Privatanleger", aud1_p:"Anleger, die Zugang zu einem geprüften Korb vietnamesischer Aktien wünschen, statt einzelne Titel selbst auszuwählen, und die den Vermögensaufbau über die Zeit priorisieren.",
+    aud2_h:"Institutionelle Anleger &amp; Family Offices", aud2_p:"Organisationen, die eine Vietnam-Strategie mit klarer These und transparenter Berichterstattung suchen, um sie als Baustein eines multinationalen Portfolios zu allokieren.",
+    aud3_h:"Ausländische Anleger mit Interesse an ASEAN", aud3_p:"Anleger, die über eine disziplinierte, zugängliche Fondsstruktur ein Engagement im wachstumsstarken Grenzmarkt Südostasiens suchen.",
+    ach_eyebrow:"Erfolge des Fonds",
+    ach_h2:"Ergebnisse, gemessen an Daten — nicht an Erzählungen",
+    ach_sub:"Illustrative Kennzahlen zur Performance der Kernstrategie von K&L Investment — die Grundlage der Methodik von K&L Vietnam ETF.",
+    metric1_v:"Top-bewertet", metric1_l:"Vietnamesische Trading-Community",
+    metric2_l:"Track Record im Live-Handel",
+    metric3_l:"Notierter Simulationsfonds",
+    metric4_l:"Regelmäßig beobachtete Unternehmen",
+    t1_h:"Start mit einem privaten Portfolio", t1_p:"Beginn des Aufbaus und der Verfolgung eines privaten Anlageportfolios am vietnamesischen Aktienmarkt — Grundlage der zentralen Analysemethode und Handelsdisziplin.",
+    t2_h:"Anerkennung in der Anleger-Community", t2_p:"Das Portfolio wurde in vietnamesischen Investment-Communities unter den besten Tradern gerankt, basierend auf Performance und Konsistenz der Strategie.",
+    t3_h:"Start von K&L Investment auf wikifolio", t3_p:"Überführung der privaten Strategie in einen öffentlich nachvollziehbaren Simulationsfonds — die Grundlage für ein strukturiertes Fondsmanagement-Modell.",
+    t4_h:"Ausgestaltung des K&L Vietnam ETF", t4_p:"Entwicklung des formalen ETF-Methodik-Rahmens, Ausweitung der Research-Abdeckung auf weitere Branchen und Aufbau der Offenlegungsinfrastruktur für Anleger.",
+    nav_portfolio:"Portfolio",
+    pf_eyebrow:"Fondsportfolio",
+    pf_h2:"Aktuelle Positionen und Copy-Trading-Daten auf iTrader",
+    pf_sub:"Zahlen von der iTrader-Seite KnLVietnamETF, Stand 19.11.2026. Die Daten ändern sich laufend und können vom Zeitpunkt Ihrer Ansicht abweichen.",
+    pf_holdings:"Portfolioaufteilung",
+    pf_total_pl:"Gesamt-G/V der aktuellen Positionen",
+    pf_col_code:"Titel",
+    pf_col_pl:"G/V",
+    pf_col_w:"Gewicht",
+    pf_perf:"Anlageperformance",
+    pf_all:"Seit Start",
+    pf_1w:"1 Woche",
+    pf_1m:"1 Monat",
+    pf_3m:"3 Monate",
+    pf_6m:"6 Monate",
+    pf_1y:"1 Jahr",
+    pf_3y:"3 Jahre",
+    pf_annual:"Rendite p.a.",
+    pf_strategy:"Strategieprofil",
+    pf_style:"Ausrichtung",
+    pf_style_v:"Kapitalwachstum",
+    pf_horizon:"Anlagehorizont",
+    pf_horizon_v:"Mittelfristig",
+    pf_exp:"Renditeziel",
+    pf_vol:"Volatilität",
+    pf_copiers:"Kopierer",
+    pf_followers:"Follower",
+    pf_aum:"Kopiertes AUM",
+    pf_aum_v:"2,4 Mrd. VND",
+    pf_min:"Mindestbetrag zum Kopieren",
+    pf_min_v:"5.000.000 VND",
+    pf_avg:"Ø kopierter Betrag je Anleger",
+    pf_avg_v:"246,4 Mio. VND",
+    pf_dur:"Ø Kopierdauer",
+    pf_dur_v:"302 Tage",
+    pf_success:"Erfolgsquote beim Kopieren",
+    pf_aum30:"AUM-Veränderung, 30 Tage",
+    pf_aum30_v:"-20,1 Mio. VND",
+    pf_terms:"Kopierkonditionen",
+    pf_rank:"Rang",
+    pf_fee:"Verwaltungsgebühr",
+    pf_fee_v:"2,0 % p.a.",
+    pf_perfee:"Erfolgsgebühr",
+    pf_perfee_v:"20 % (auf Erträge über 15 % p.a.)",
+    pf_slip:"Ø Abweichung des Ausführungspreises ggü. iTrader",
+    pf_note:"Quelle: iTrader-Seite von KnLVietnamETF, erfasst am 19.11.2026. „Seit Start“ entspricht „Alle“ auf iTrader. Die G/V der aktuellen Positionen ist der nicht realisierte Gewinn/Verlust offener Positionen und weicht von der Gesamtperformance des Kontos seit Start ab. Die Wertentwicklung der Vergangenheit ist kein verlässlicher Indikator für zukünftige Ergebnisse.",
+    cta_eyebrow:"Kontakt zum Fonds",
+    cta_h2:"Verstehen Sie die Anlagestrategie, <em>bevor</em> Sie entscheiden",
+    cta_btn1:"Fondsunterlagen anfordern", cta_btn2:"Strategie ansehen",
+    disclaimer:"Die Inhalte dieser Seite dienen der Illustration und Einführung und stellen keine Anlageberatung dar. Die Wertentwicklung der Vergangenheit ist kein verlässlicher Indikator für zukünftige Ergebnisse. Anleger sollten eine eigene Beurteilung vornehmen oder einen zugelassenen Finanzexperten konsultieren, bevor sie eine Anlageentscheidung treffen.",
+    footer_loc:"K&L Vietnam ETF — Hanoi, Vietnam"
+  }
+};
+
+function applyLanguage(lang){
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(translations[lang][key] !== undefined) el.textContent = translations[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-html');
+    if(translations[lang][key] !== undefined) el.innerHTML = translations[lang][key];
+  });
+  document.querySelectorAll('#langSwitch button').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-lang')===lang);
+  });
+  try{ localStorage.setItem('kl_lang', lang); }catch(e){}
+}
+
+document.getElementById('langSwitch').addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-lang]');
+  if(!btn) return;
+  applyLanguage(btn.getAttribute('data-lang'));
+});
+
+let initialLang = 'vi';
+try{
+  const saved = localStorage.getItem('kl_lang');
+  if(saved && translations[saved]) initialLang = saved;
+}catch(e){}
+applyLanguage(initialLang);
+
+/* ---------- VN-Index chart ---------- */
+/* Weekly closing levels of VN-Index, 2007-01-02 to 2025-12-29.
+   Source: TCInvest (TCX) weekly candle data. */
+const vnLabels = ["2007-01-02", "2007-01-08", "2007-01-15", "2007-01-22", "2007-01-29", "2007-02-05", "2007-02-12", "2007-02-26", "2007-03-05", "2007-03-12", "2007-03-19", "2007-03-26", "2007-04-02", "2007-04-09", "2007-04-16", "2007-04-23", "2007-05-02", "2007-05-07", "2007-05-14", "2007-05-21", "2007-05-28", "2007-06-04", "2007-06-11", "2007-06-18", "2007-06-25", "2007-07-02", "2007-07-09", "2007-07-16", "2007-07-24", "2007-07-30", "2007-08-06", "2007-08-13", "2007-08-20", "2007-08-27", "2007-09-04", "2007-09-10", "2007-09-17", "2007-09-24", "2007-10-01", "2007-10-08", "2007-10-15", "2007-10-22", "2007-10-29", "2007-11-05", "2007-11-12", "2007-11-19", "2007-11-26", "2007-12-03", "2007-12-10", "2007-12-17", "2007-12-24", "2008-01-02", "2008-01-07", "2008-01-14", "2008-01-21", "2008-01-28", "2008-02-12", "2008-02-18", "2008-02-25", "2008-03-03", "2008-03-10", "2008-03-17", "2008-03-24", "2008-03-31", "2008-04-07", "2008-04-16", "2008-04-21", "2008-04-28", "2008-05-05", "2008-05-12", "2008-05-19", "2008-05-26", "2008-06-02", "2008-06-09", "2008-06-16", "2008-06-23", "2008-06-30", "2008-07-07", "2008-07-14", "2008-07-21", "2008-07-28", "2008-08-04", "2008-08-11", "2008-08-19", "2008-08-25", "2008-09-03", "2008-09-10", "2008-09-15", "2008-09-22", "2008-09-29", "2008-10-06", "2008-10-13", "2008-10-20", "2008-10-27", "2008-11-03", "2008-11-10", "2008-11-17", "2008-11-24", "2008-12-01", "2008-12-08", "2008-12-15", "2008-12-22", "2008-12-29", "2009-01-02", "2009-01-05", "2009-01-12", "2009-01-19", "2009-02-02", "2009-02-09", "2009-02-16", "2009-02-23", "2009-03-02", "2009-03-09", "2009-03-16", "2009-03-23", "2009-03-30", "2009-04-07", "2009-04-13", "2009-04-20", "2009-04-27", "2009-05-04", "2009-05-11", "2009-05-18", "2009-05-25", "2009-06-01", "2009-06-08", "2009-06-15", "2009-06-22", "2009-06-29", "2009-07-06", "2009-07-13", "2009-07-20", "2009-07-27", "2009-08-03", "2009-08-10", "2009-08-17", "2009-08-24", "2009-08-31", "2009-09-07", "2009-09-14", "2009-09-21", "2009-09-28", "2009-10-05", "2009-10-12", "2009-10-19", "2009-10-26", "2009-11-02", "2009-11-09", "2009-11-16", "2009-11-23", "2009-11-30", "2009-12-08", "2009-12-14", "2009-12-21", "2009-12-28", "2010-01-04", "2010-01-11", "2010-01-18", "2010-01-25", "2010-02-01", "2010-02-08", "2010-02-22", "2010-03-01", "2010-03-08", "2010-03-15", "2010-03-22", "2010-03-29", "2010-04-05", "2010-04-12", "2010-04-19", "2010-04-26", "2010-05-04", "2010-05-10", "2010-05-17", "2010-05-24", "2010-05-31", "2010-06-07", "2010-06-14", "2010-06-21", "2010-06-28", "2010-07-05", "2010-07-12", "2010-07-19", "2010-07-26", "2010-08-02", "2010-08-09", "2010-08-16", "2010-08-23", "2010-08-30", "2010-09-06", "2010-09-13", "2010-09-20", "2010-09-27", "2010-10-04", "2010-10-11", "2010-10-18", "2010-10-25", "2010-11-01", "2010-11-08", "2010-11-15", "2010-11-22", "2010-11-29", "2010-12-06", "2010-12-13", "2010-12-20", "2010-12-27", "2011-01-04", "2011-01-10", "2011-01-17", "2011-01-24", "2011-02-08", "2011-02-14", "2011-02-21", "2011-02-28", "2011-03-07", "2011-03-14", "2011-03-21", "2011-03-28", "2011-04-04", "2011-04-13", "2011-04-18", "2011-04-25", "2011-05-04", "2011-05-09", "2011-05-16", "2011-05-23", "2011-05-30", "2011-06-06", "2011-06-13", "2011-06-20", "2011-06-27", "2011-07-04", "2011-07-11", "2011-07-18", "2011-07-25", "2011-08-01", "2011-08-08", "2011-08-15", "2011-08-22", "2011-08-29", "2011-09-05", "2011-09-12", "2011-09-19", "2011-09-26", "2011-10-03", "2011-10-10", "2011-10-17", "2011-10-24", "2011-10-31", "2011-11-07", "2011-11-14", "2011-11-21", "2011-11-28", "2011-12-05", "2011-12-12", "2011-12-19", "2011-12-26", "2012-01-03", "2012-01-09", "2012-01-16", "2012-01-30", "2012-02-06", "2012-02-13", "2012-02-20", "2012-02-27", "2012-03-05", "2012-03-12", "2012-03-19", "2012-03-26", "2012-04-03", "2012-04-09", "2012-04-16", "2012-04-23", "2012-05-02", "2012-05-07", "2012-05-14", "2012-05-21", "2012-05-28", "2012-06-04", "2012-06-11", "2012-06-18", "2012-06-25", "2012-07-02", "2012-07-09", "2012-07-16", "2012-07-23", "2012-07-30", "2012-08-06", "2012-08-13", "2012-08-20", "2012-08-27", "2012-09-04", "2012-09-10", "2012-09-17", "2012-09-24", "2012-10-01", "2012-10-08", "2012-10-15", "2012-10-22", "2012-10-29", "2012-11-05", "2012-11-12", "2012-11-19", "2012-11-26", "2012-12-03", "2012-12-10", "2012-12-17", "2012-12-24", "2013-01-02", "2013-01-07", "2013-01-14", "2013-01-21", "2013-01-28", "2013-02-04", "2013-02-18", "2013-02-25", "2013-03-04", "2013-03-11", "2013-03-18", "2013-03-25", "2013-04-01", "2013-04-08", "2013-04-15", "2013-04-22", "2013-05-02", "2013-05-06", "2013-05-13", "2013-05-20", "2013-05-27", "2013-06-03", "2013-06-10", "2013-06-17", "2013-06-24", "2013-07-01", "2013-07-08", "2013-07-15", "2013-07-22", "2013-07-29", "2013-08-05", "2013-08-12", "2013-08-19", "2013-08-26", "2013-09-03", "2013-09-09", "2013-09-16", "2013-09-23", "2013-09-30", "2013-10-07", "2013-10-14", "2013-10-21", "2013-10-28", "2013-11-04", "2013-11-11", "2013-11-18", "2013-11-25", "2013-12-02", "2013-12-09", "2013-12-16", "2013-12-23", "2013-12-30", "2014-01-02", "2014-01-06", "2014-01-13", "2014-01-20", "2014-01-27", "2014-02-06", "2014-02-10", "2014-02-17", "2014-02-24", "2014-03-03", "2014-03-10", "2014-03-17", "2014-03-24", "2014-03-31", "2014-04-07", "2014-04-14", "2014-04-21", "2014-04-28", "2014-05-05", "2014-05-12", "2014-05-19", "2014-05-26", "2014-06-02", "2014-06-09", "2014-06-16", "2014-06-23", "2014-06-30", "2014-07-07", "2014-07-14", "2014-07-21", "2014-07-28", "2014-08-04", "2014-08-11", "2014-08-18", "2014-08-25", "2014-09-03", "2014-09-08", "2014-09-15", "2014-09-22", "2014-09-29", "2014-10-06", "2014-10-13", "2014-10-20", "2014-10-27", "2014-11-03", "2014-11-10", "2014-11-17", "2014-11-24", "2014-12-01", "2014-12-08", "2014-12-15", "2014-12-22", "2014-12-29", "2015-01-05", "2015-01-12", "2015-01-19", "2015-01-26", "2015-02-02", "2015-02-09", "2015-02-24", "2015-03-02", "2015-03-09", "2015-03-16", "2015-03-23", "2015-03-30", "2015-04-06", "2015-04-13", "2015-04-20", "2015-04-27", "2015-05-04", "2015-05-11", "2015-05-18", "2015-05-25", "2015-06-01", "2015-06-08", "2015-06-15", "2015-06-22", "2015-06-29", "2015-07-06", "2015-07-13", "2015-07-20", "2015-07-27", "2015-08-03", "2015-08-10", "2015-08-17", "2015-08-24", "2015-08-31", "2015-09-07", "2015-09-14", "2015-09-21", "2015-09-28", "2015-10-05", "2015-10-12", "2015-10-19", "2015-10-26", "2015-11-02", "2015-11-09", "2015-11-16", "2015-11-23", "2015-11-30", "2015-12-07", "2015-12-14", "2015-12-21", "2015-12-28", "2016-01-04", "2016-01-11", "2016-01-18", "2016-01-25", "2016-02-01", "2016-02-15", "2016-02-22", "2016-02-29", "2016-03-07", "2016-03-14", "2016-03-21", "2016-03-28", "2016-04-04", "2016-04-11", "2016-04-19", "2016-04-25", "2016-05-04", "2016-05-09", "2016-05-16", "2016-05-23", "2016-05-30", "2016-06-06", "2016-06-13", "2016-06-20", "2016-06-27", "2016-07-04", "2016-07-11", "2016-07-18", "2016-07-25", "2016-08-01", "2016-08-08", "2016-08-15", "2016-08-22", "2016-08-29", "2016-09-05", "2016-09-12", "2016-09-19", "2016-09-26", "2016-10-03", "2016-10-10", "2016-10-17", "2016-10-24", "2016-10-31", "2016-11-07", "2016-11-14", "2016-11-21", "2016-11-28", "2016-12-05", "2016-12-12", "2016-12-19", "2016-12-26", "2017-01-03", "2017-01-09", "2017-01-16", "2017-01-23", "2017-02-02", "2017-02-06", "2017-02-13", "2017-02-20", "2017-02-27", "2017-03-06", "2017-03-13", "2017-03-20", "2017-03-27", "2017-04-03", "2017-04-10", "2017-04-17", "2017-04-24", "2017-05-03", "2017-05-08", "2017-05-15", "2017-05-22", "2017-05-29", "2017-06-05", "2017-06-12", "2017-06-19", "2017-06-26", "2017-07-03", "2017-07-10", "2017-07-17", "2017-07-24", "2017-07-31", "2017-08-07", "2017-08-14", "2017-08-21", "2017-08-28", "2017-09-05", "2017-09-11", "2017-09-18", "2017-09-25", "2017-10-02", "2017-10-09", "2017-10-16", "2017-10-23", "2017-10-30", "2017-11-06", "2017-11-13", "2017-11-20", "2017-11-27", "2017-12-04", "2017-12-11", "2017-12-18", "2017-12-25", "2018-01-02", "2018-01-08", "2018-01-15", "2018-01-22", "2018-01-29", "2018-02-05", "2018-02-12", "2018-02-21", "2018-02-26", "2018-03-05", "2018-03-12", "2018-03-19", "2018-03-26", "2018-04-02", "2018-04-09", "2018-04-16", "2018-04-23", "2018-05-02", "2018-05-07", "2018-05-14", "2018-05-21", "2018-05-28", "2018-06-04", "2018-06-11", "2018-06-18", "2018-06-25", "2018-07-02", "2018-07-09", "2018-07-16", "2018-07-23", "2018-07-30", "2018-08-06", "2018-08-13", "2018-08-20", "2018-08-27", "2018-09-04", "2018-09-10", "2018-09-17", "2018-09-24", "2018-10-01", "2018-10-08", "2018-10-15", "2018-10-22", "2018-10-29", "2018-11-05", "2018-11-12", "2018-11-19", "2018-11-26", "2018-12-03", "2018-12-10", "2018-12-17", "2018-12-24", "2019-01-02", "2019-01-07", "2019-01-14", "2019-01-21", "2019-01-28", "2019-02-11", "2019-02-18", "2019-02-25", "2019-03-04", "2019-03-11", "2019-03-18", "2019-03-25", "2019-04-01", "2019-04-08", "2019-04-16", "2019-04-22", "2019-05-02", "2019-05-06", "2019-05-13", "2019-05-20", "2019-05-27", "2019-06-03", "2019-06-10", "2019-06-17", "2019-06-24", "2019-07-01", "2019-07-08", "2019-07-15", "2019-07-22", "2019-07-29", "2019-08-05", "2019-08-12", "2019-08-19", "2019-08-26", "2019-09-03", "2019-09-09", "2019-09-16", "2019-09-23", "2019-09-30", "2019-10-07", "2019-10-14", "2019-10-21", "2019-10-28", "2019-11-04", "2019-11-11", "2019-11-18", "2019-11-25", "2019-12-02", "2019-12-09", "2019-12-16", "2019-12-23", "2019-12-30", "2020-01-02", "2020-01-06", "2020-01-13", "2020-01-20", "2020-01-30", "2020-02-03", "2020-02-10", "2020-02-17", "2020-02-24", "2020-03-02", "2020-03-09", "2020-03-16", "2020-03-23", "2020-03-30", "2020-04-06", "2020-04-13", "2020-04-20", "2020-04-27", "2020-05-04", "2020-05-11", "2020-05-18", "2020-05-25", "2020-06-01", "2020-06-08", "2020-06-15", "2020-06-22", "2020-06-29", "2020-07-06", "2020-07-13", "2020-07-20", "2020-07-27", "2020-08-03", "2020-08-10", "2020-08-17", "2020-08-24", "2020-08-31", "2020-09-07", "2020-09-14", "2020-09-21", "2020-09-28", "2020-10-05", "2020-10-12", "2020-10-19", "2020-10-26", "2020-11-02", "2020-11-09", "2020-11-16", "2020-11-23", "2020-11-30", "2020-12-07", "2020-12-14", "2020-12-21", "2020-12-28", "2021-01-04", "2021-01-11", "2021-01-18", "2021-01-25", "2021-02-01", "2021-02-08", "2021-02-17", "2021-02-22", "2021-03-01", "2021-03-08", "2021-03-15", "2021-03-22", "2021-03-29", "2021-04-05", "2021-04-12", "2021-04-19", "2021-04-26", "2021-05-04", "2021-05-10", "2021-05-17", "2021-05-24", "2021-05-31", "2021-06-07", "2021-06-14", "2021-06-21", "2021-06-28", "2021-07-05", "2021-07-12", "2021-07-19", "2021-07-26", "2021-08-02", "2021-08-09", "2021-08-16", "2021-08-23", "2021-08-30", "2021-09-06", "2021-09-13", "2021-09-20", "2021-09-27", "2021-10-04", "2021-10-11", "2021-10-18", "2021-10-25", "2021-11-01", "2021-11-08", "2021-11-15", "2021-11-22", "2021-11-29", "2021-12-06", "2021-12-13", "2021-12-20", "2021-12-27", "2022-01-04", "2022-01-10", "2022-01-17", "2022-01-24", "2022-02-07", "2022-02-14", "2022-02-21", "2022-02-28", "2022-03-07", "2022-03-14", "2022-03-21", "2022-03-28", "2022-04-04", "2022-04-12", "2022-04-18", "2022-04-25", "2022-05-04", "2022-05-09", "2022-05-16", "2022-05-23", "2022-05-30", "2022-06-06", "2022-06-13", "2022-06-20", "2022-06-27", "2022-07-04", "2022-07-11", "2022-07-18", "2022-07-25", "2022-08-01", "2022-08-08", "2022-08-15", "2022-08-22", "2022-08-29", "2022-09-05", "2022-09-12", "2022-09-19", "2022-09-26", "2022-10-03", "2022-10-10", "2022-10-17", "2022-10-24", "2022-10-31", "2022-11-07", "2022-11-14", "2022-11-21", "2022-11-28", "2022-12-05", "2022-12-12", "2022-12-19", "2022-12-26", "2023-01-03", "2023-01-09", "2023-01-16", "2023-01-27", "2023-01-30", "2023-02-06", "2023-02-13", "2023-02-20", "2023-02-27", "2023-03-06", "2023-03-13", "2023-03-20", "2023-03-27", "2023-04-03", "2023-04-10", "2023-04-17", "2023-04-24", "2023-05-04", "2023-05-08", "2023-05-15", "2023-05-22", "2023-05-29", "2023-06-05", "2023-06-12", "2023-06-19", "2023-06-26", "2023-07-03", "2023-07-10", "2023-07-17", "2023-07-24", "2023-07-31", "2023-08-07", "2023-08-14", "2023-08-21", "2023-08-28", "2023-09-05", "2023-09-11", "2023-09-18", "2023-09-25", "2023-10-02", "2023-10-09", "2023-10-16", "2023-10-23", "2023-10-30", "2023-11-06", "2023-11-13", "2023-11-20", "2023-11-27", "2023-12-04", "2023-12-11", "2023-12-18", "2023-12-25", "2024-01-02", "2024-01-08", "2024-01-15", "2024-01-22", "2024-01-29", "2024-02-05", "2024-02-15", "2024-02-19", "2024-02-26", "2024-03-04", "2024-03-11", "2024-03-18", "2024-03-25", "2024-04-01", "2024-04-08", "2024-04-15", "2024-04-22", "2024-05-02", "2024-05-06", "2024-05-13", "2024-05-20", "2024-05-27", "2024-06-03", "2024-06-10", "2024-06-17", "2024-06-24", "2024-07-01", "2024-07-08", "2024-07-15", "2024-07-22", "2024-07-29", "2024-08-05", "2024-08-12", "2024-08-19", "2024-08-26", "2024-09-04", "2024-09-09", "2024-09-16", "2024-09-23", "2024-09-30", "2024-10-07", "2024-10-14", "2024-10-21", "2024-10-28", "2024-11-04", "2024-11-11", "2024-11-18", "2024-11-25", "2024-12-02", "2024-12-09", "2024-12-16", "2024-12-23", "2024-12-30", "2025-01-02", "2025-01-06", "2025-01-13", "2025-01-20", "2025-02-03", "2025-02-10", "2025-02-17", "2025-02-24", "2025-03-03", "2025-03-10", "2025-03-17", "2025-03-24", "2025-03-31", "2025-04-08", "2025-04-14", "2025-04-21", "2025-04-28", "2025-05-05", "2025-05-12", "2025-05-19", "2025-05-26", "2025-06-02", "2025-06-09", "2025-06-16", "2025-06-23", "2025-06-30", "2025-07-07", "2025-07-14", "2025-07-21", "2025-07-28", "2025-08-04", "2025-08-11", "2025-08-18", "2025-08-25", "2025-09-03", "2025-09-08", "2025-09-15", "2025-09-22", "2025-09-29", "2025-10-06", "2025-10-13", "2025-10-20", "2025-10-27", "2025-11-03", "2025-11-10", "2025-11-17", "2025-11-24", "2025-12-01", "2025-12-08", "2025-12-15", "2025-12-22", "2025-12-29"];
+const vnValues = [816.51, 914.79, 1023.05, 974.76, 1074.55, 1030.9, 1083.25, 1147.66, 1155.68, 1109.76, 1090.56, 1071.33, 1033.92, 1012.98, 968.88, 923.89, 947.19, 1039.63, 1066.56, 1089.6, 1077.36, 1057.36, 1048.19, 1033.69, 1024.68, 1010.53, 1015.73, 981.31, 940.36, 892.88, 935.68, 887.93, 905.48, 908.37, 934.13, 930.46, 958.67, 1046.86, 1081.63, 1104.61, 1097.07, 1092.48, 1066.63, 1018.29, 998.22, 975.92, 972.35, 974.63, 922.09, 935.07, 927.02, 903.09, 860.77, 847.05, 776.04, 859.62, 816.03, 687.1, 663.3, 640.14, 643.8, 545.68, 512.7, 533.0, 539.01, 537.31, 515.88, 522.36, 500.33, 460.04, 428.05, 414.1, 384.24, 372.68, 366.02, 392.61, 439.68, 456.64, 483.05, 429.46, 451.36, 444.28, 488.94, 526.98, 547.69, 558.56, 476.0, 439.06, 483.81, 452.14, 379.06, 382.51, 345.11, 347.05, 365.97, 352.07, 318.96, 314.74, 299.68, 299.54, 307.26, 304.46, 315.62, 313.34, 313.4, 306.12, 303.21, 281.63, 274.51, 252.57, 245.74, 245.7, 251.44, 266.62, 287.41, 310.3, 325.1, 334.1, 309.9, 321.6, 366.2, 390.2, 404.6, 411.6, 478.7, 509.6, 475.2, 461.4, 435.4, 438.8, 428.7, 454.7, 466.8, 480.7, 507.0, 519.2, 536.5, 528.5, 548.0, 571.0, 582.8, 549.7, 582.0, 609.5, 615.2, 587.1, 554.9, 548.2, 555.8, 490.6, 495.0, 444.2, 443.3, 495.1, 494.8, 520.9, 505.4, 477.6, 482.0, 493.0, 507.0, 496.9, 513.4, 531.5, 516.0, 505.3, 510.5, 517.4, 522.0, 529.3, 542.4, 542.0, 520.7, 483.7, 513.0, 510.4, 504.3, 511.2, 505.1, 503.7, 499.5, 506.2, 500.3, 493.9, 482.8, 452.7, 454.8, 429.1, 458.8, 451.4, 457.6, 449.7, 451.7, 459.3, 458.4, 445.2, 452.6, 457.3, 441.6, 426.5, 439.9, 464.4, 473.1, 485.3, 472.8, 484.7, 481.9, 489.2, 519.5, 510.6, 520.0, 503.9, 467.0, 459.2, 495.1, 461.1, 457.7, 459.2, 464.3, 461.0, 456.5, 480.1, 472.7, 479.7, 432.9, 410.8, 443.4, 445.0, 438.9, 433.4, 425.3, 430.3, 414.7, 409.2, 405.7, 397.66, 383.92, 400.76, 404.4, 435.29, 459.92, 457.11, 440.3, 427.6, 417.96, 414.49, 411.03, 422.07, 410.57, 396.3, 379.62, 383.35, 383.88, 377.16, 366.03, 356.21, 351.55, 336.73, 354.33, 373.0, 401.74, 405.02, 403.3, 423.43, 439.6, 432.11, 438.52, 454.1, 441.03, 447.44, 462.52, 465.72, 473.77, 476.32, 480.1, 434.95, 437.38, 428.8, 432.9, 433.09, 427.17, 422.37, 415.44, 416.98, 424.47, 413.16, 418.21, 425.56, 433.45, 399.72, 396.02, 397.51, 398.87, 395.48, 392.57, 388.16, 392.54, 398.23, 391.7, 375.26, 386.71, 385.71, 381.71, 377.82, 383.8, 392.21, 396.78, 413.73, 426.06, 462.69, 454.16, 468.09, 483.42, 494.03, 477.69, 477.15, 470.68, 481.35, 489.99, 491.04, 502.58, 494.27, 473.21, 474.51, 475.24, 486.1, 487.6, 500.24, 518.39, 527.97, 509.03, 498.84, 481.13, 485.66, 493.99, 503.76, 493.93, 494.66, 500.62, 507.79, 486.82, 472.7, 480.03, 476.42, 477.19, 486.61, 497.5, 494.53, 500.83, 500.75, 497.08, 498.61, 501.34, 505.64, 507.78, 510.12, 506.06, 504.45, 506.41, 504.63, 505.37, 518.94, 543.59, 560.19, 556.52, 549.76, 572.22, 570.57, 586.48, 579.75, 596.83, 601.75, 594.29, 593.04, 600.57, 565.33, 578.92, 578.0, 542.46, 529.49, 541.49, 562.02, 559.04, 574.48, 560.78, 578.82, 589.35, 582.77, 596.26, 600.14, 593.9, 605.43, 604.24, 620.14, 636.65, 638.65, 632.5, 613.29, 604.98, 611.55, 617.72, 585.28, 591.51, 600.84, 602.59, 600.36, 588.03, 566.58, 578.76, 553.93, 523.09, 533.37, 545.63, 569.73, 574.81, 582.38, 576.07, 574.13, 587.24, 592.57, 593.97, 586.1, 575.44, 551.42, 547.85, 554.03, 568.32, 565.77, 562.4, 554.51, 537.44, 561.82, 569.56, 578.07, 582.73, 584.7, 581.75, 616.43, 627.28, 628.63, 631.26, 621.06, 603.76, 589.03, 556.3, 570.87, 556.81, 566.74, 566.25, 570.38, 564.15, 588.02, 593.02, 601.74, 607.37, 612.36, 611.27, 604.46, 582.86, 571.62, 563.43, 568.18, 567.67, 579.03, 560.05, 543.04, 522.24, 545.25, 544.75, 554.03, 566.11, 573.65, 577.26, 575.82, 572.08, 558.43, 572.34, 579.86, 592.48, 598.37, 606.52, 610.82, 614.81, 608.11, 621.88, 629.84, 619.25, 620.77, 640.3, 658.68, 664.56, 649.87, 652.23, 627.39, 655.71, 662.28, 667.75, 669.19, 666.88, 651.31, 674.09, 685.73, 683.95, 687.0, 684.83, 682.25, 666.73, 679.2, 673.25, 675.87, 665.14, 663.07, 675.16, 664.37, 664.87, 679.8, 685.06, 686.26, 697.28, 700.35, 703.78, 707.83, 714.47, 712.62, 712.21, 710.54, 722.14, 722.31, 727.95, 718.45, 712.41, 717.73, 720.0, 725.37, 733.82, 743.41, 738.81, 749.72, 761.24, 769.01, 776.47, 775.73, 777.6, 761.86, 777.09, 788.68, 772.08, 768.97, 771.63, 788.73, 801.2, 805.82, 807.13, 804.42, 807.8, 820.95, 826.84, 840.37, 843.73, 868.21, 890.69, 935.57, 960.33, 940.16, 935.16, 952.32, 984.24, 1012.65, 1050.11, 1062.07, 1115.64, 1105.04, 1003.94, 1059.73, 1102.85, 1121.21, 1123.41, 1150.19, 1153.59, 1174.46, 1199.96, 1157.14, 1119.86, 1050.26, 1026.8, 1044.85, 1040.54, 963.9, 992.87, 1039.01, 1016.51, 983.17, 960.78, 917.51, 909.72, 933.39, 935.52, 959.6, 968.47, 968.88, 987.05, 989.54, 968.9, 991.34, 1002.97, 1017.13, 1008.39, 970.08, 958.36, 900.82, 924.86, 914.29, 898.19, 917.97, 926.54, 958.59, 952.04, 912.26, 892.54, 880.9, 902.71, 902.3, 908.88, 908.67, 950.89, 988.91, 979.63, 985.25, 1004.12, 988.71, 980.76, 989.26, 982.9, 966.21, 979.64, 974.14, 952.55, 976.48, 970.03, 959.88, 958.28, 953.61, 959.2, 949.94, 975.34, 975.4, 982.34, 993.35, 991.1, 974.34, 980.0, 992.45, 984.06, 974.08, 987.22, 990.36, 997.84, 987.59, 991.84, 989.2, 996.57, 1015.59, 1022.49, 1010.03, 977.78, 970.75, 963.56, 966.18, 956.41, 963.51, 960.99, 965.14, 968.54, 978.96, 991.46, 936.62, 940.75, 937.45, 933.09, 882.19, 891.44, 761.78, 709.73, 696.06, 701.8, 757.94, 789.6, 776.66, 769.11, 813.73, 827.03, 852.74, 864.47, 886.22, 863.52, 868.56, 851.98, 847.61, 871.21, 872.02, 829.16, 798.39, 841.46, 850.74, 854.78, 878.98, 901.54, 888.97, 900.95, 908.27, 909.91, 924.0, 943.3, 961.26, 925.47, 938.29, 966.29, 990.0, 1010.22, 1021.49, 1045.96, 1067.46, 1084.42, 1103.87, 1167.69, 1194.2, 1166.78, 1056.61, 1126.91, 1114.93, 1173.5, 1168.47, 1168.69, 1181.56, 1194.05, 1162.21, 1224.45, 1231.66, 1238.71, 1248.53, 1239.39, 1241.81, 1266.36, 1283.93, 1320.46, 1374.05, 1351.74, 1377.77, 1390.12, 1420.27, 1347.14, 1299.31, 1268.83, 1310.05, 1341.45, 1357.05, 1329.43, 1313.2, 1334.65, 1345.31, 1352.64, 1351.17, 1334.89, 1372.73, 1392.7, 1389.24, 1444.27, 1456.51, 1473.37, 1452.35, 1493.03, 1443.32, 1463.54, 1479.79, 1477.03, 1498.28, 1528.48, 1496.02, 1472.89, 1478.96, 1501.71, 1504.84, 1498.89, 1505.33, 1466.54, 1469.1, 1498.5, 1516.44, 1482.0, 1458.56, 1379.23, 1366.8, 1329.26, 1182.77, 1240.71, 1285.45, 1287.98, 1284.08, 1217.3, 1185.48, 1198.9, 1171.31, 1179.25, 1194.76, 1206.33, 1252.74, 1262.33, 1269.18, 1282.57, 1280.51, 1248.78, 1234.03, 1203.28, 1132.11, 1035.91, 1061.85, 1019.82, 1027.36, 997.15, 954.53, 969.33, 971.46, 1080.01, 1051.81, 1052.48, 1020.34, 1007.09, 1051.44, 1060.17, 1108.08, 1117.1, 1077.15, 1055.3, 1059.31, 1039.56, 1024.77, 1053.0, 1045.14, 1046.79, 1064.64, 1069.71, 1052.89, 1042.91, 1049.12, 1040.31, 1066.9, 1067.07, 1063.76, 1090.84, 1107.53, 1115.22, 1129.38, 1120.18, 1138.07, 1168.4, 1185.9, 1207.67, 1225.98, 1232.21, 1177.99, 1183.37, 1224.05, 1241.48, 1227.36, 1193.05, 1154.15, 1128.54, 1154.73, 1108.03, 1060.62, 1076.78, 1101.68, 1101.19, 1095.61, 1102.16, 1124.44, 1102.3, 1103.06, 1129.93, 1154.68, 1154.7, 1181.5, 1175.67, 1172.55, 1198.53, 1209.7, 1212.0, 1258.28, 1247.35, 1263.78, 1281.8, 1284.09, 1255.11, 1276.6, 1174.85, 1209.52, 1221.03, 1244.7, 1273.11, 1261.93, 1261.72, 1287.58, 1279.91, 1282.02, 1245.32, 1283.04, 1280.75, 1264.78, 1242.11, 1236.6, 1223.64, 1252.23, 1285.32, 1283.87, 1273.96, 1251.71, 1272.04, 1290.92, 1270.6, 1288.39, 1285.46, 1252.72, 1254.89, 1252.56, 1218.57, 1228.1, 1250.46, 1270.14, 1262.57, 1257.5, 1275.14, 1266.78, 1254.59, 1230.48, 1249.11, 1265.05, 1275.2, 1276.08, 1296.75, 1305.36, 1326.05, 1326.15, 1321.88, 1317.46, 1210.67, 1222.46, 1219.12, 1229.23, 1226.3, 1267.3, 1301.39, 1314.46, 1332.6, 1329.89, 1315.49, 1349.35, 1371.44, 1386.97, 1457.76, 1497.28, 1531.13, 1495.21, 1584.95, 1630.0, 1645.47, 1682.21, 1666.97, 1667.26, 1658.62, 1660.7, 1645.82, 1747.55, 1731.19, 1683.18, 1639.65, 1599.1, 1635.46, 1654.93, 1690.99, 1741.32, 1646.89, 1704.31, 1729.8, 1784.49];
+
+(function renderStats(){
+  const iMax = vnValues.indexOf(Math.max(...vnValues));
+  const iMin = vnValues.indexOf(Math.min(...vnValues));
+  const last = vnValues.length-1;
+  const fmt = v => v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('stHigh').textContent = fmt(vnValues[iMax]);
+  document.getElementById('stHighD').textContent = vnLabels[iMax];
+  document.getElementById('stLow').textContent = fmt(vnValues[iMin]);
+  document.getElementById('stLowD').textContent = vnLabels[iMin];
+  document.getElementById('stLast').textContent = fmt(vnValues[last]);
+  document.getElementById('stLastD').textContent = vnLabels[last];
+})();
+
+const ctx = document.getElementById('vnindexChart').getContext('2d');
+window.vnChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: vnLabels,
+    datasets: [{
+      label: 'VN-Index',
+      data: vnValues,
+      borderColor: '#C9A227',
+      backgroundColor: 'rgba(201,162,39,0.10)',
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      pointHoverBackgroundColor: '#E4C860',
+      borderWidth: 1.6,
+      tension: 0,
+      fill: true
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 1200 },
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#162238',
+        borderColor: 'rgba(237,232,220,0.15)',
+        borderWidth: 1,
+        titleColor: '#EDE8DC',
+        bodyColor: '#E4C860',
+        padding: 10,
+        displayColors: false,
+        titleFont: { family: "'IBM Plex Mono', monospace", size: 11 },
+        bodyFont: { family: "'IBM Plex Mono', monospace", size: 12 },
+        callbacks: { label: c => 'VN-Index: ' + c.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: ctx => ctx.tick && ctx.tick.label ? 'rgba(237,232,220,0.07)' : 'transparent' },
+        ticks: {
+          autoSkip: false, maxRotation: 0, color: '#9C9686',
+          font: { family: "'IBM Plex Mono', monospace", size: 10 },
+          callback: function(val, i){
+            const y = vnLabels[i].slice(0,4);
+            const isNewYear = i===0 || vnLabels[i-1].slice(0,4)!==y;
+            return (isNewYear && (+y % 2 === 1 || window.innerWidth>720)) ? y : '';
+          }
+        }
+      },
+      y: {
+        grid: { color: 'rgba(237,232,220,0.06)' },
+        ticks: { color: '#9C9686', font: { family: "'IBM Plex Mono', monospace", size: 10 } }
+      }
+    }
+  }
+});
+
+/* ---------- Portfolio donut (iTrader snapshot 19/11/2026) ---------- */
+new Chart(document.getElementById('pfDonut').getContext('2d'), {
+  type: 'doughnut',
+  data: {
+    labels: ['VHM','HPG'],
+    datasets: [{ data: [75.6, 24.2], backgroundColor: ['#C9A227','#6E9C8C'], borderColor: '#0E1626', borderWidth: 3 }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '68%',
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#162238', borderColor: 'rgba(237,232,220,0.15)', borderWidth: 1,
+        titleColor: '#EDE8DC', bodyColor: '#E4C860', displayColors: false,
+        callbacks: { label: c => c.label + ': ' + c.parsed + '%' }
+      }
+    }
+  }
+});
+</script>
 
 </body>
 </html>
